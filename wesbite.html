@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>黃義祥 · 靜宜大學資管系</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@300;400;600;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0d0c16;--surf:#15141f;--surf2:#1e1d2c;
+      --gold:#c49040;--gold-d:#7a5828;
+      --cream:#f2ede0;--text:#d0c8b5;--muted:#a09888;
+      --accent:#6a9fc8;--green:#7aaa90;--red:#c08282;
+      --sakura:#c08282;--indigo:#3a5488;
+      --trans:.55s cubic-bezier(.77,0,.18,1);
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html,body{width:100%;height:100%;overflow:hidden;}
+    body{font-family:'Noto Serif TC',serif;background:var(--bg);color:var(--text);font-size:1.05rem;}
+
+    /* ── Video Background ── */
+    #bg-video{
+      position:fixed;inset:0;width:100%;height:100%;
+      object-fit:cover;opacity:0.38;z-index:-1;pointer-events:none;
+    }
+
+    /* grain */
+    body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      opacity:0.35;}
+
+    /* ══ TOPBAR ══ */
+    #topbar{
+      position:fixed;top:0;left:0;right:0;z-index:200;height:68px;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 2.5rem;
+      background:linear-gradient(to bottom,rgba(13,12,22,.97) 70%,transparent);
+      backdrop-filter:blur(6px);
+      border-bottom:1px solid rgba(201,168,92,.08);
+    }
+    .bar-logo{
+      font-family:'Ma Shan Zheng',cursive;font-size:1.45rem;
+      letter-spacing:.12em;color:#ffffff;white-space:nowrap;
+    }
+    #nav{display:flex;list-style:none;border:1px solid rgba(196,144,64,.15);}
+    #nav li{position:relative;}
+    #nav button{
+      font-family:'Space Mono',monospace;font-size:.76rem;
+      letter-spacing:.12em;text-transform:uppercase;
+      color:var(--muted);background:none;border:none;
+      padding:.7rem 1.5rem;
+      transition:color .22s,background .22s;white-space:nowrap;
+      border-right:1px solid rgba(201,168,92,.1);
+    }
+    #nav li:last-child button{border-right:none;}
+    #nav button:hover{color:var(--cream);background:rgba(201,168,92,.05);}
+    #nav button.active{color:var(--gold);background:rgba(201,168,92,.09);}
+    #nav button.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;background:var(--gold);}
+    .bar-counter{font-family:'Space Mono',monospace;font-size:.76rem;letter-spacing:.2em;color:var(--muted);white-space:nowrap;}
+    .bar-counter em{color:var(--gold);font-style:normal;}
+
+    /* arrows */
+    .arrow{
+      position:fixed;top:50%;transform:translateY(-50%);z-index:150;
+      background:none;border:1px solid rgba(201,168,92,.14);
+      color:var(--gold-d);
+      width:32px;height:52px;font-size:.95rem;
+      display:flex;align-items:center;justify-content:center;
+      transition:color .2s,border-color .2s,background .2s;
+    }
+    .arrow:hover{color:var(--gold);border-color:var(--gold);background:rgba(201,168,92,.07);}
+    .arrow:disabled{opacity:.1;pointer-events:none;}
+    #arrowL{left:.5rem;}#arrowR{right:.5rem;}
+
+    /* dots */
+    #dots{position:fixed;bottom:1.1rem;left:50%;transform:translateX(-50%);z-index:150;display:flex;gap:.5rem;}
+    .dot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:background .3s,transform .3s;}
+    .dot.active{background:var(--gold);transform:scale(1.4);}
+
+    /* ══ STAGE ══ */
+    #stage{position:fixed;inset:0;overflow:hidden;}
+    #track{display:flex;width:calc(5*100vw);height:100%;transition:transform var(--trans);will-change:transform;}
+    .slide{
+      width:100vw;height:100%;overflow-y:auto;overflow-x:hidden;
+      flex-shrink:0;padding:80px 5vw 4rem;
+      scrollbar-width:thin;scrollbar-color:var(--gold-d) transparent;
+    }
+    .slide::-webkit-scrollbar{width:3px;}
+    .slide::-webkit-scrollbar-thumb{background:var(--gold-d);border-radius:2px;}
+
+    /* shared */
+    .eyebrow{
+      font-family:'Space Mono',monospace;font-size:.8rem;
+      letter-spacing:.25em;color:var(--gold);text-transform:uppercase;
+      margin-bottom:.65rem;display:flex;align-items:center;gap:.8rem;
+    }
+    .eyebrow::before{content:attr(data-n);color:var(--gold-d);}
+    h2{
+      font-family:'Ma Shan Zheng',cursive;
+      font-size:clamp(2.8rem,4.2vw,4rem);
+      color:var(--cream);line-height:1.2;margin-bottom:1.8rem;
+      letter-spacing:.12em;font-weight:400;
+    }
+    h2 em{font-style:normal;color:var(--gold);}
+
+    /* ══ S0 HERO ══ */
+    #s0{padding:0;display:flex;flex-direction:column;justify-content:center;
+        position:relative;overflow:hidden;}
+
+    #hero-canvas{
+      position:absolute;inset:0;z-index:0;
+      width:100%;height:100%;
+      pointer-events:none;
+    }
+    .hero-overlay{
+      position:absolute;inset:0;z-index:1;
+      background:
+        linear-gradient(135deg, rgba(13,12,22,.38) 20%, rgba(13,12,22,.12) 100%),
+        radial-gradient(ellipse 60% 80% at 5% 90%, rgba(77,111,160,.12) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 50% at 90% 10%, rgba(196,144,64,.07) 0%, transparent 45%);
+    }
+    .hero-content{
+      position:relative;z-index:2;
+      display:flex;align-items:center;justify-content:center;
+      padding:0 clamp(1.5rem,5vw,5rem);
+      gap:clamp(2rem,5vw,6rem);
+      height:100%;
+    }
+    .hero-text{flex:0 0 auto;}
+
+    /* ── Hero right photo collage ── */
+    .hero-right{
+      flex:0 0 clamp(260px,38vw,500px);
+      display:flex;align-items:center;
+      padding-right:clamp(1.5rem,4vw,4rem);
+      animation:up .7s .4s ease both;
+    }
+    .hero-photos{
+      display:grid;
+      grid-template-columns:1.2fr 1fr;
+      grid-template-rows:1.6fr 1fr;
+      gap:8px;
+      width:100%;
+      height:clamp(320px,55vh,520px);
+    }
+    .hp{overflow:hidden;position:relative;}
+    .hp img{
+      width:100%;height:100%;
+      object-fit:cover;object-position:center top;
+      filter:grayscale(.15) contrast(1.05) sepia(.06);
+      transition:transform .6s ease,filter .6s ease;
+      display:block;
+    }
+    .hp:hover img{transform:scale(1.07);filter:grayscale(0) contrast(1.1);}
+    .hp::after{
+      content:'';position:absolute;inset:0;
+      border:1px solid rgba(196,144,64,.2);
+      pointer-events:none;
+    }
+    /* back1 — 左上大圖，跨 2 行 */
+    .hp1{grid-column:1/2;grid-row:1/3;}
+    /* back2 — 右上 */
+    .hp2{grid-column:2/3;grid-row:1/2;}
+    /* back3 — 右下左 */
+    .hp3{grid-column:2/3;grid-row:2/3;}
+    /* back4 — 底部通欄 */
+    .hero-photos{
+      grid-template-rows:1.5fr 1fr 0.8fr;
+    }
+    .hp4{grid-column:1/3;grid-row:3/4;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+    /* ── Name + Photo row ── */
+    .hero-name-row{
+      display:flex;align-items:center;gap:2.5rem;
+      margin-bottom:.6rem;
+      animation:up .7s .1s ease both;
+    }
+    h1{
+      font-family:'Ma Shan Zheng',cursive;
+      font-size:clamp(4.5rem,8vw,8rem);
+      line-height:1;color:var(--cream);
+      letter-spacing:.08em;flex-shrink:0;
+    }
+    h1 em{font-style:normal;color:var(--gold);}
+
+    /* ── Hero card slider ── */
+    .hero-slider-wrap{
+      flex:0 0 clamp(300px,55vw,760px);
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      gap:1.4rem;
+      position:relative;
+      animation:up .7s .25s ease both;
+    }
+    .hero-slider{
+      width:100%;
+      height:clamp(260px,62vh,580px);
+      position:relative;
+      perspective:1100px;
+      transition:width .6s cubic-bezier(.77,0,.18,1), height .6s cubic-bezier(.77,0,.18,1);
+    }
+    .hslide{
+      position:absolute;inset:0;
+      border:1px solid rgba(196,144,64,.22);
+      overflow:hidden;
+      transition:transform .7s cubic-bezier(.77,0,.18,1), opacity .7s ease;
+      transform-origin:center bottom;
+      will-change:transform,opacity;
+    }
+    .hslide img{
+      width:100%;height:100%;
+      object-fit:contain;object-position:center;
+      filter:grayscale(.1) contrast(1.05);
+      transition:filter .5s;
+      display:block;
+      background:#0d0c16;
+    }
+    .hslide.active img{filter:grayscale(0) contrast(1.08);}
+    /* dot indicators */
+    .hslider-dots{
+      display:flex;gap:.55rem;
+    }
+    .hsdot{
+      width:22px;height:3px;background:rgba(196,144,64,.3);
+      transition:background .4s, width .4s;cursor:pointer;
+    }
+    .hsdot.active{background:var(--gold);width:36px;}
+
+    .h-eye{
+      font-family:'Space Mono',monospace;font-size:.84rem;
+      letter-spacing:.3em;color:var(--gold);text-transform:uppercase;
+      margin-bottom:1rem;display:flex;align-items:center;gap:1rem;
+      animation:up .7s .2s ease both;
+    }
+    .h-eye::before{content:'';width:34px;height:1px;background:var(--gold);}
+    .h-desc{
+      font-size:1.05rem;line-height:2;color:var(--muted);
+      max-width:500px;border-left:2px solid var(--gold-d);
+      padding-left:1.5rem;animation:up .7s .3s ease both;
+    }
+    .h-cta{margin-top:2rem;animation:up .7s .42s ease both;}
+    .cta-btn{
+      font-family:'Space Mono',monospace;font-size:.82rem;
+      letter-spacing:.16em;text-transform:uppercase;
+      color:var(--gold);background:none;
+      border:1px solid rgba(201,168,92,.35);
+      padding:.7rem 1.9rem;
+      transition:background .25s,color .25s,border-color .25s;
+      display:inline-flex;align-items:center;gap:.6rem;cursor:pointer;
+    }
+    .cta-btn:hover{background:rgba(201,168,92,.1);border-color:var(--gold);color:var(--cream);}
+
+    .filmstrip{
+      position:absolute;right:3%;top:50%;transform:translateY(-50%);
+      display:flex;flex-direction:column;gap:5px;opacity:.06;pointer-events:none;z-index:2;
+    }
+    .fh{width:18px;height:13px;border:1.5px solid var(--cream);border-radius:2px;}
+    @keyframes up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ══ S1 TESTS ══ */
+    .sub-tabs{
+      display:flex;margin-bottom:2rem;
+      border:1px solid rgba(196,144,64,.12);width:fit-content;
+      border-radius:2px;
+    }
+    .sub-tab{
+      font-family:'Space Mono',monospace;font-size:.74rem;
+      letter-spacing:.1em;text-transform:uppercase;
+      color:var(--muted);background:none;border:none;
+      padding:.65rem 1.5rem;
+      transition:color .22s,background .22s;
+      border-right:1px solid rgba(201,168,92,.12);position:relative;
+      cursor:pointer;
+    }
+    .sub-tab:last-child{border-right:none;}
+    .sub-tab:hover{color:var(--cream);}
+    .sub-tab.active{color:var(--gold);background:rgba(201,168,92,.08);}
+    .sub-tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold);}
+    .sub-panel{display:none;}
+    .sub-panel.active{display:block;}
+
+    .ucan-header{
+      display:flex;align-items:flex-start;gap:2rem;
+      margin-bottom:1.5rem;
+      background:var(--surf);border:1px solid rgba(201,168,92,.08);
+      padding:1.4rem 1.8rem;
+    }
+    .ucan-info h3{font-family:'Ma Shan Zheng',cursive;font-size:1.7rem;color:var(--cream);margin-bottom:.3rem;letter-spacing:.05em;}
+    .ucan-info p{font-size:.95rem;color:var(--muted);line-height:1.6;}
+    .ucan-badge{font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.1em;color:var(--green);border:1px solid rgba(111,168,138,.35);padding:.22rem .7rem;text-transform:uppercase;margin-top:.5rem;display:inline-block;}
+    .ucan-bars{display:flex;flex-direction:column;gap:.7rem;}
+    .bar-row{display:grid;grid-template-columns:140px 1fr 80px;align-items:center;gap:1rem;}
+    .bar-label{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.06em;color:var(--text);text-align:right;white-space:nowrap;}
+    .bar-track{height:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);position:relative;overflow:hidden;}
+    .bar-fill{height:100%;width:0;transition:width .9s cubic-bezier(.4,0,.2,1);}
+    .bar-fill.ace{background:linear-gradient(to right,rgba(201,168,92,.55),rgba(201,168,92,.9));}
+    .bar-fill.mid{background:linear-gradient(to right,rgba(74,127,165,.45),rgba(74,127,165,.8));}
+    .bar-meta{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.05em;white-space:nowrap;}
+    .bar-meta .score{color:var(--cream);}
+    .bar-meta .pr{color:var(--muted);font-size:.64rem;}
+    .bar-legend{display:flex;gap:1.5rem;margin-top:1rem;font-family:'Space Mono',monospace;font-size:.57rem;letter-spacing:.08em;color:var(--muted);}
+    .bar-legend span{display:flex;align-items:center;gap:.4rem;}
+    .ldot{width:10px;height:10px;flex-shrink:0;}
+    .ldot.ace{background:rgba(201,168,92,.8);}
+    .ldot.mid{background:rgba(74,127,165,.7);}
+
+    .cluster-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(201,168,92,.07);border:1px solid rgba(201,168,92,.07);margin-bottom:1.5rem;}
+    .cluster-card{background:var(--surf);padding:1.1rem;transition:background .2s;}
+    .cluster-card:hover{background:var(--surf2);}
+    .cluster-card.top{background:rgba(201,168,92,.06);border-bottom:2px solid var(--gold);}
+    .cc-name{font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:.4rem;}
+    .cc-score{font-family:'Ma Shan Zheng',cursive;font-size:1.8rem;color:var(--cream);line-height:1;margin-bottom:.2rem;}
+    .cc-pr{font-family:'Space Mono',monospace;font-size:.54rem;color:var(--gold-d);}
+    .cluster-card.top .cc-name{color:var(--gold);}
+    .cluster-card.top .cc-score{color:var(--gold);}
+
+    .ris-wrap{display:flex;gap:1.5rem;}
+    .ris-code-box{
+      background:var(--surf);border:1px solid rgba(201,168,92,.1);
+      padding:1.8rem 2rem;flex-shrink:0;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      min-width:180px;
+    }
+    .ris-big{font-family:'Ma Shan Zheng',cursive;font-size:4rem;color:var(--gold);letter-spacing:.1em;line-height:1;}
+    .ris-sub{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.15em;color:var(--muted);text-transform:uppercase;margin-top:.5rem;}
+    .ris-items{display:flex;flex-direction:column;gap:.8rem;flex:1;}
+    .ris-item{background:var(--surf);border:1px solid rgba(201,168,92,.07);padding:1rem 1.2rem;}
+    .ris-item-top{display:flex;align-items:center;gap:.8rem;margin-bottom:.3rem;}
+    .ris-code{font-family:'Space Mono',monospace;font-size:.95rem;color:var(--gold);width:1.2rem;}
+    .ris-name{font-family:'Ma Shan Zheng',cursive;font-size:1.4rem;color:var(--cream);letter-spacing:.05em;}
+    .ris-score-pr{font-family:'Space Mono',monospace;font-size:.58rem;color:var(--muted);margin-left:auto;}
+    .ris-desc{font-size:.92rem;line-height:1.72;color:var(--muted);}
+
+    .panel-104{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+    .soul-card{background:var(--surf);border:1px solid rgba(201,168,92,.1);padding:2rem;}
+    .soul-label{font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:.5rem;}
+    .soul-name{font-family:'Ma Shan Zheng',cursive;font-size:2.8rem;color:var(--cream);margin-bottom:.2rem;letter-spacing:.05em;}
+    .soul-role{font-family:'Space Mono',monospace;font-size:.64rem;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;margin-bottom:1.2rem;}
+    .soul-desc{font-size:.95rem;line-height:1.85;color:var(--muted);}
+    .soul-stat{margin-top:1.2rem;padding-top:1rem;border-top:1px solid rgba(201,168,92,.1);font-family:'Space Mono',monospace;font-size:.57rem;letter-spacing:.1em;color:var(--muted);}
+    .soul-stat em{color:var(--gold);font-style:normal;}
+    .holland-card{background:var(--surf);border:1px solid rgba(201,168,92,.1);padding:2rem;display:flex;flex-direction:column;}
+    .hc-code{font-family:'Ma Shan Zheng',cursive;font-size:4rem;color:var(--gold);line-height:1;margin-bottom:.5rem;letter-spacing:.08em;}
+    .hc-title{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:1.2rem;}
+    .hc-items{display:flex;flex-direction:column;gap:.8rem;flex:1;}
+    .hc-item{background:var(--surf2);padding:.9rem 1.1rem;}
+    .hc-item-label{font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.13em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem;}
+    .hc-item-text{font-size:.92rem;line-height:1.75;color:var(--muted);}
+
+    /* ══ S2 JOBS ══ */
+    .jobs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+    .job-card{background:var(--surf);border:1px solid rgba(201,168,92,.1);padding:2rem;position:relative;overflow:hidden;display:flex;flex-direction:column;transition:border-color .3s;}
+    .job-card:hover{border-color:rgba(196,144,64,.25);}
+    .job-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+    .job-card.j1::before{background:linear-gradient(to bottom,var(--gold),var(--accent));}
+    .job-card.j2::before{background:linear-gradient(to bottom,var(--green),var(--accent));}
+    .j-num{font-family:'Space Mono',monospace;font-size:2.5rem;font-weight:700;color:rgba(201,168,92,.1);line-height:1;margin-bottom:.2rem;}
+    .j-cat{font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.4rem;}
+    .j1 .j-cat{color:var(--accent);}.j2 .j-cat{color:var(--green);}
+    .j-title{font-family:'Ma Shan Zheng',cursive;font-size:1.8rem;color:var(--cream);margin-bottom:.8rem;line-height:1.3;letter-spacing:.05em;}
+    .j-co{font-family:'Space Mono',monospace;font-size:.57rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:1rem;}
+    .j-meta{display:flex;flex-wrap:wrap;gap:.8rem;margin-bottom:1.2rem;}
+    .jm{font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.05em;color:var(--muted);display:flex;align-items:center;gap:.35rem;}
+    .jm::before{content:'◈';color:var(--gold-d);font-size:.44rem;}
+    .j-section{font-family:'Space Mono',monospace;font-size:.56rem;letter-spacing:.16em;color:var(--gold);text-transform:uppercase;margin:1rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid rgba(201,168,92,.1);}
+    .jlist{list-style:none;display:flex;flex-direction:column;gap:.4rem;}
+    .jlist li{font-size:.92rem;line-height:1.65;color:var(--muted);display:flex;gap:.65rem;}
+    .jlist li::before{content:'—';color:var(--gold-d);flex-shrink:0;}
+    .s-pills{margin-top:auto;padding-top:1rem;border-top:1px solid rgba(201,168,92,.08);display:flex;flex-wrap:wrap;gap:.4rem;}
+    .sp{font-family:'Space Mono',monospace;font-size:.67rem;letter-spacing:.06em;padding:.25rem .8rem;background:rgba(74,127,165,.08);border:1px solid rgba(74,127,165,.2);color:var(--accent);}
+    .sp.g{background:rgba(111,168,138,.08);border-color:rgba(111,168,138,.25);color:var(--green);}
+
+    /* ══ S3 AUTOBIOGRAPHY ══ */
+    .bio-layout{display:grid;grid-template-columns:1fr 1.1fr;gap:2.5rem;}
+    .resume-col{display:flex;flex-direction:column;gap:1.4rem;}
+    .resume-target{
+      background:var(--surf2);border:1px solid rgba(196,144,64,.25);
+      padding:1.2rem 1.6rem;
+      display:flex;align-items:center;gap:1rem;
+    }
+    .resume-target-label{
+      font-family:'Space Mono',monospace;font-size:.64rem;
+      letter-spacing:.18em;color:var(--muted);text-transform:uppercase;
+      white-space:nowrap;border-right:1px solid rgba(196,144,64,.2);
+      padding-right:1rem;
+    }
+    .resume-target-val{
+      font-family:'Ma Shan Zheng',cursive;font-size:1.5rem;
+      color:var(--gold);letter-spacing:.08em;
+    }
+    .resume-block{
+      background:var(--surf);border:1px solid rgba(196,144,64,.1);
+      overflow:hidden;
+    }
+    .resume-block-header{
+      font-family:'Space Mono',monospace;font-size:.65rem;
+      letter-spacing:.2em;color:var(--gold);text-transform:uppercase;
+      padding:.7rem 1.2rem;
+      background:rgba(196,144,64,.06);
+      border-bottom:1px solid rgba(196,144,64,.1);
+      display:flex;align-items:center;gap:.6rem;
+    }
+    .resume-block-header::before{content:'';width:3px;height:14px;background:var(--gold);flex-shrink:0;}
+
+    .info-grid{
+      display:grid;grid-template-columns:1fr 1fr;
+      gap:1px;background:rgba(255,255,255,.04);
+    }
+    .info-item{padding:.75rem 1.2rem;background:var(--surf);}
+    .info-item-label{
+      font-family:'Space Mono',monospace;font-size:.55rem;
+      letter-spacing:.12em;color:var(--muted);text-transform:uppercase;
+      margin-bottom:.25rem;
+    }
+    .info-item-val{font-size:.86rem;color:var(--cream);line-height:1.5;}
+    .info-item-val a{color:var(--accent);text-decoration:none;}
+    .info-item-val a:hover{color:var(--gold);}
+
+    /* cert cards — clickable */
+    .cert-list{display:flex;flex-direction:column;gap:1px;background:rgba(255,255,255,.03);}
+    .cert-item{
+      display:flex;align-items:center;gap:1.2rem;
+      padding:.9rem 1.2rem;background:var(--surf);
+      transition:background .2s,border-color .2s;
+      cursor:pointer;position:relative;
+    }
+    .cert-item:hover{background:var(--surf2);}
+    .cert-item:hover .cert-view-hint{opacity:1;}
+    .cert-view-hint{
+      position:absolute;right:1rem;
+      font-family:'Space Mono',monospace;font-size:.55rem;
+      letter-spacing:.1em;color:var(--gold);
+      opacity:0;transition:opacity .2s;
+      text-transform:uppercase;
+    }
+    .cert-badge{
+      width:40px;height:40px;border-radius:4px;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.1rem;font-weight:700;
+    }
+    .cert-badge.icdl{background:rgba(0,160,210,.15);border:1px solid rgba(0,160,210,.3);color:#00a0d2;}
+    .cert-badge.erps{background:rgba(196,144,64,.12);border:1px solid rgba(196,144,64,.3);color:var(--gold);}
+    .cert-body{flex:1;}
+    .cert-name{font-size:.9rem;color:var(--cream);margin-bottom:.18rem;}
+    .cert-meta{
+      font-family:'Space Mono',monospace;font-size:.58rem;
+      letter-spacing:.08em;color:var(--muted);
+    }
+    .cert-id{
+      font-family:'Space Mono',monospace;font-size:.53rem;
+      letter-spacing:.06em;color:var(--muted);margin-top:.15rem;opacity:.7;
+    }
+
+    /* project cards — clickable for 樂之聲 */
+    .proj-list{display:flex;flex-direction:column;gap:1px;background:rgba(255,255,255,.03);}
+    .proj-item{
+      padding:1rem 1.2rem;background:var(--surf);
+      transition:background .2s;
+    }
+    .proj-item:hover{background:var(--surf2);}
+    .proj-item.has-pdf{cursor:pointer;position:relative;}
+    .proj-item.has-pdf:hover .proj-pdf-hint{opacity:1;}
+    .proj-pdf-hint{
+      display:inline-block;
+      font-family:'Space Mono',monospace;font-size:.52rem;
+      letter-spacing:.08em;color:var(--red);
+      border:1px solid rgba(184,114,114,.35);padding:.18rem .55rem;
+      margin-left:.5rem;opacity:.7;transition:opacity .2s;
+      text-transform:uppercase;vertical-align:middle;
+    }
+    .proj-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem;}
+    .proj-name{font-size:.95rem;color:var(--cream);font-family:'Ma Shan Zheng',cursive;letter-spacing:.06em;}
+    .proj-link{
+      font-family:'Space Mono',monospace;font-size:.55rem;
+      letter-spacing:.06em;color:var(--accent);text-decoration:none;
+      border:1px solid rgba(77,111,160,.3);padding:.2rem .6rem;
+      transition:color .2s,border-color .2s;
+    }
+    .proj-link:hover{color:var(--gold);border-color:rgba(196,144,64,.4);}
+    .proj-desc{font-size:.82rem;color:var(--muted);line-height:1.72;}
+    .proj-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.55rem;}
+    .proj-tag{
+      font-family:'Space Mono',monospace;font-size:.53rem;
+      letter-spacing:.06em;padding:.18rem .6rem;
+      background:rgba(77,111,160,.08);border:1px solid rgba(77,111,160,.18);color:var(--accent);
+    }
+
+    .why-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(201,168,92,.07);border:1px solid rgba(201,168,92,.07);margin-bottom:1.5rem;}
+    .wc{background:var(--surf);padding:1.3rem;transition:background .2s;}
+    .wc:hover{background:var(--surf2);}
+    .wc-ico{font-size:1rem;margin-bottom:.4rem;}
+    .wc-lbl{font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.13em;color:var(--gold-d);text-transform:uppercase;margin-bottom:.3rem;}
+    .wc-t{font-size:.9rem;line-height:1.78;color:var(--muted);}
+    .plan-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(111,168,138,.08);border:1px solid rgba(111,168,138,.08);}
+    .pc{background:var(--surf);padding:1.2rem;}
+    .p-yr{font-family:'Space Mono',monospace;font-size:1.8rem;font-weight:700;color:rgba(201,168,92,.12);line-height:1;margin-bottom:.15rem;}
+    .p-ph{font-family:'Space Mono',monospace;font-size:.53rem;letter-spacing:.15em;color:var(--green);text-transform:uppercase;margin-bottom:.7rem;}
+    .pl{list-style:none;display:flex;flex-direction:column;gap:.38rem;}
+    .pl li{font-size:.88rem;line-height:1.65;color:var(--muted);display:flex;gap:.55rem;}
+    .pl li::before{content:'▸';color:var(--green);font-size:.5rem;flex-shrink:0;margin-top:.2rem;}
+    .sec-sub{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:.9rem;}
+    .auto-t{font-size:1rem;line-height:2.1;color:#ccc4b2;}
+    .auto-t p{margin-bottom:1rem;}
+    .auto-t p:first-of-type::first-letter{font-family:'Ma Shan Zheng',cursive;font-size:2.8rem;color:var(--gold);float:left;line-height:.72;margin-right:.12em;margin-top:.1em;}
+    .hl{color:#f2ede0;font-style:italic;font-weight:600;text-shadow:0 0 18px rgba(196,144,64,.3);}
+    .c-strip{margin-top:1.5rem;background:var(--surf);border:1px solid rgba(201,168,92,.08);padding:1.3rem 1.8rem;display:flex;justify-content:space-between;align-items:center;}
+    .c-name{font-family:'Ma Shan Zheng',cursive;font-size:1.6rem;color:var(--cream);letter-spacing:.05em;}
+    .c-sub{font-family:'Space Mono',monospace;font-size:.68rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-top:.2rem;}
+    .c-links{display:flex;gap:1.3rem;}
+    .c-links a{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.1em;color:var(--muted);text-decoration:none;transition:color .2s;}
+    .c-links a:hover{color:var(--gold);}
+
+    /* ══ S4 FUTURE PATH ══ */
+    .future-header{margin-bottom:2.5rem;}
+    .future-header p{font-size:.88rem;color:var(--muted);line-height:1.8;max-width:600px;}
+
+    .timeline-road{position:relative;padding:1rem 0 2rem;}
+    .tl-spine{
+      position:absolute;left:50%;top:0;bottom:0;width:2px;
+      background:linear-gradient(to bottom,var(--gold),rgba(201,168,92,.1));
+      transform:translateX(-50%);z-index:0;
+    }
+    .tl-node{
+      position:relative;margin-bottom:3.5rem;
+      display:grid;gap:2rem;
+    }
+    .tl-node:nth-child(odd){grid-template-columns:1fr 60px 1fr;}
+    .tl-node:nth-child(even){grid-template-columns:1fr 60px 1fr;}
+    .tl-dot-wrap{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:.5rem;position:relative;z-index:1;}
+    .tl-dot{
+      width:44px;height:44px;border-radius:50%;
+      border:2px solid var(--gold);
+      background:var(--bg);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Ma Shan Zheng',cursive;font-size:1rem;color:var(--gold);
+      flex-shrink:0;position:relative;z-index:2;
+      box-shadow:0 0 0 5px var(--bg), 0 0 0 7px rgba(201,168,92,.15);
+      transition:border-color .25s, color .25s, box-shadow .25s, background .25s;
+    }
+    .tl-node:has(.tl-card:hover) .tl-dot,
+    .tl-node:hover .tl-dot {
+      border-color:#4caf82;color:#4caf82;
+      box-shadow:0 0 0 5px var(--bg), 0 0 0 7px rgba(76,175,130,.2), 0 0 16px 4px rgba(76,175,130,.18);
+    }
+    .tl-year-label{
+      font-family:'Space Mono',monospace;font-size:.57rem;
+      letter-spacing:.18em;color:var(--muted);text-transform:uppercase;
+      margin-top:.5rem;text-align:center;
+    }
+    .tl-card{
+      background:var(--surf);border:1px solid rgba(201,168,92,.1);
+      padding:1.5rem;
+      opacity:0;transform:translateX(-20px);
+      transition:opacity .6s,transform .6s,border-color .3s;
+    }
+    .tl-card.right{transform:translateX(20px);}
+    .tl-card.visible{opacity:1;transform:translateX(0);}
+    .tl-card:hover{border-color:rgba(196,144,64,.22);}
+    .tl-empty{}
+    .tl-phase{font-family:'Space Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.6rem;}
+    .now .tl-phase{color:var(--green);}
+    .yr1 .tl-phase{color:var(--gold);}
+    .yr3 .tl-phase{color:var(--accent);}
+    .yr10 .tl-phase{color:var(--red);}
+    .tl-card-title{font-family:'Ma Shan Zheng',cursive;font-size:1.5rem;color:var(--cream);margin-bottom:.8rem;letter-spacing:.05em;}
+    .goal-list{list-style:none;display:flex;flex-direction:column;gap:.45rem;}
+    .goal-list li{font-size:.92rem;line-height:1.65;color:var(--muted);display:flex;gap:.65rem;}
+    .goal-list li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:.45rem;}
+    .now .goal-list li::before{background:var(--green);}
+    .yr1 .goal-list li::before{background:var(--gold);}
+    .yr3 .goal-list li::before{background:var(--accent);}
+    .yr10 .goal-list li::before{background:var(--red);}
+
+    /* ══ PDF MODAL ══ */
+    .pdf-modal-overlay{
+      display:none;position:fixed;inset:0;
+      background:rgba(5,4,14,.92);z-index:10000;
+      align-items:center;justify-content:center;
+      backdrop-filter:blur(4px);
+    }
+    .pdf-modal-overlay.open{display:flex;}
+    .pdf-modal-box{
+      position:relative;
+      width:min(92vw, 900px);
+      height:88vh;
+      background:var(--surf);
+      border:1px solid rgba(196,144,64,.2);
+      display:flex;flex-direction:column;
+    }
+    .pdf-modal-header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:.7rem 1.2rem;
+      background:rgba(196,144,64,.07);
+      border-bottom:1px solid rgba(196,144,64,.12);
+      flex-shrink:0;
+    }
+    .pdf-modal-title{
+      font-family:'Space Mono',monospace;font-size:.68rem;
+      letter-spacing:.15em;color:var(--gold);text-transform:uppercase;
+    }
+    .pdf-close-btn{
+      font-family:'Space Mono',monospace;font-size:.72rem;
+      letter-spacing:.1em;text-transform:uppercase;
+      color:var(--muted);background:none;
+      border:1px solid rgba(201,168,92,.2);
+      padding:.3rem .9rem;cursor:pointer;
+      transition:color .2s,border-color .2s;
+    }
+    .pdf-close-btn:hover{color:var(--gold);border-color:var(--gold);}
+    .pdf-modal-body{flex:1;overflow:hidden;}
+    .pdf-modal-body iframe{width:100%;height:100%;border:none;}
+
+    /* ══ RESPONSIVE ══ */
+    @media(max-width:900px){
+      #topbar{padding:0 .8rem;}
+      #nav button{padding:.55rem .65rem;font-size:.62rem;letter-spacing:.04em;}
+      .bar-counter{display:none;}
+      .slide{padding:76px .9rem 5rem;}
+      .jobs-grid,.bio-layout,.panel-104{grid-template-columns:1fr;}
+      .plan-row{grid-template-columns:1fr;}
+      .bar-row{grid-template-columns:90px 1fr 65px;}
+      .c-strip{flex-direction:column;align-items:flex-start;gap:.8rem;}
+      .hero-name-row{gap:1.2rem;}
+      .cluster-grid{grid-template-columns:repeat(2,1fr);}
+      .ris-wrap{flex-direction:column;}
+      .tl-node{grid-template-columns:1fr 44px 1fr!important;}
+      .tl-dot{width:36px;height:36px;font-size:.85rem;}
+    }
+    @media(max-width:600px){
+      .cluster-grid{grid-template-columns:1fr 1fr;}
+      #nav button{padding:.45rem .4rem;font-size:.5rem;letter-spacing:.02em;}
+      .hero-name-row{flex-direction:column;align-items:flex-start;gap:1rem;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Video Background ── -->
+<video id="bg-video" autoplay loop muted playsinline>
+  <source src="back.mp4" type="video/mp4">
+</video>
+
+<!-- ══ PDF MODAL ══ -->
+<div class="pdf-modal-overlay" id="pdfModal" onclick="closePdfModal(event)">
+  <div class="pdf-modal-box" onclick="event.stopPropagation()">
+    <div class="pdf-modal-header">
+      <span class="pdf-modal-title" id="pdfModalTitle">文件檢視</span>
+      <button class="pdf-close-btn" onclick="closePdfModal()">✕ 關閉</button>
+    </div>
+    <div class="pdf-modal-body">
+      <iframe id="pdfIframe" src="" title="PDF Viewer"></iframe>
+    </div>
+  </div>
+</div>
+
+<header id="topbar">
+  <div class="bar-logo">個人網站</div>
+  <ul id="nav">
+    <li><button class="active" data-i="0">封面</button></li>
+    <li><button data-i="1">測驗結果</button></li>
+    <li><button data-i="2">興趣職位</button></li>
+    <li><button data-i="3">自傳履歷</button></li>
+    <li><button data-i="4">未來路徑</button></li>
+  </ul>
+  <div class="bar-counter"><em id="cur">01</em> / 05</div>
+</header>
+
+<button class="arrow" id="arrowL" disabled>&#8592;</button>
+<button class="arrow" id="arrowR">&#8594;</button>
+
+<div id="stage">
+ <div id="track">
+
+  <!-- S0 HERO -->
+  <div class="slide" id="s0">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-overlay"></div>
+    <div class="filmstrip">
+      <div class="fh"></div><div class="fh"></div><div class="fh"></div>
+      <div class="fh"></div><div class="fh"></div><div class="fh"></div>
+      <div class="fh"></div><div class="fh"></div><div class="fh"></div>
+      <div class="fh"></div><div class="fh"></div><div class="fh"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-name-row">
+          <h1>黃義祥</h1>
+        </div>
+        <div class="h-eye">靜宜大學 · 資管二A · 411322388</div>
+        <div class="h-cta">
+          <button class="cta-btn" onclick="goTo(1)">探索職涯歷程 <span>→</span></button>
+        </div>
+      </div>
+
+      <!-- Middle card slider -->
+      <div class="hero-slider-wrap">
+        <div class="hero-slider" id="heroSlider">
+          <div class="hslide"><img src="back1.jpg" alt=""></div>
+          <div class="hslide"><img src="back2.jpg" alt=""></div>
+          <div class="hslide"><img src="back3.jpg" alt=""></div>
+          <div class="hslide"><img src="back4.jpg" alt=""></div>
+          <div class="hslide"><img src="back5.jpg" alt=""></div>
+          <div class="hslide"><img src="back6.jpg" alt=""></div>
+          <div class="hslide"><img src="back7.jpg" alt=""></div>
+        </div>
+        <div class="hslider-dots" id="hsliderDots">
+          <span class="hsdot active"></span>
+          <span class="hsdot"></span>
+          <span class="hsdot"></span>
+          <span class="hsdot"></span>
+          <span class="hsdot"></span>
+          <span class="hsdot"></span>
+          <span class="hsdot"></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- S1 TESTS -->
+  <div class="slide" id="s1">
+    <div class="eyebrow" data-n="01">Career Assessment</div>
+    <h2>測驗<em>結果</em></h2>
+    <div class="sub-tabs">
+      <button class="sub-tab active" onclick="switchTab(0)">UCAN 共通職能</button>
+      <button class="sub-tab" onclick="switchTab(1)">UCAN 職業興趣探索</button>
+      <button class="sub-tab" onclick="switchTab(2)">104 生涯興趣、何倫碼</button>
+    </div>
+    <div class="sub-panel active" id="tab0">
+      <div class="ucan-header">
+        <div class="ucan-info">
+          <h3>職場共通職能診斷</h3>
+          <p>靜宜大學 · 資管系日間部 · 施測：2024/09/03</p>
+          <span class="ucan-badge">8 項全數達優勢等級</span>
+        </div>
+      </div>
+      <div class="ucan-bars" id="ucanBars"></div>
+      <div class="bar-legend">
+        <span><div class="ldot ace"></div>優勢能力（≥4.5）</span>
+        <span><div class="ldot mid"></div>中等能力（1.5–4.4）</span>
+      </div>
+    </div>
+    <div class="sub-panel" id="tab1">
+      <div class="ucan-header">
+        <div class="ucan-info">
+          <h3>職業興趣探索診斷</h3>
+          <p>靜宜大學 · 資管系日間部 · 施測：2025/05/09</p>
+          <p>興趣度最高職涯類型：<strong style="color:var(--cream)">資訊科技 › 企業經營管理 › 科技工程數學 › 物流運輸</strong></p>
+        </div>
+      </div>
+      <div class="cluster-grid" id="clusterGrid"></div>
+      <div style="margin-top:1.5rem;">
+        <div style="font-family:'Space Mono',monospace;font-size:.57rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem;">職業性格代碼 RIS</div>
+        <div class="ris-wrap">
+          <div class="ris-code-box">
+            <div class="ris-big">RIS</div>
+            <div class="ris-sub">實用 · 研究 · 社會</div>
+          </div>
+          <div class="ris-items">
+            <div class="ris-item">
+              <div class="ris-item-top">
+                <span class="ris-code">R</span>
+                <span class="ris-name">實用型</span>
+                <span class="ris-score-pr">12 / 12 &nbsp; PR99</span>
+              </div>
+              <div class="ris-desc">喜歡講求實際、動手操作，按部就班完成技術性工作。情緒穩定、坦誠直率、獨立實際。偏好具體、有架構的解決方案。</div>
+            </div>
+            <div class="ris-item">
+              <div class="ris-item-top">
+                <span class="ris-code">I</span>
+                <span class="ris-name">研究型</span>
+                <span class="ris-score-pr">8 / 12 &nbsp; PR84</span>
+              </div>
+              <div class="ris-desc">善於觀察、思考、分析與推理，喜歡與符號、概念、文字有關的工作。好奇分析、謹慎條理，依自己步調追根究底。</div>
+            </div>
+            <div class="ris-item">
+              <div class="ris-item-top">
+                <span class="ris-code">S</span>
+                <span class="ris-name">社會型</span>
+                <span class="ris-score-pr">8 / 12 &nbsp; PR79</span>
+              </div>
+              <div class="ris-desc">對人親切和善、體恤他人、容易相處，喜歡傾聽和了解他人。善於團隊合作，願意協助解決衝突，喜歡幫助他人成長。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sub-panel" id="tab2">
+      <div class="panel-104">
+        <div class="soul-card">
+          <div class="soul-label">你的靈魂住著</div>
+          <div class="soul-name">齊柏林</div>
+          <div class="soul-role">導演 · 攝影師</div>
+          <div class="soul-desc">喜歡動手從事藝術創作，直覺敏銳有創意，想法不受傳統限制。擅長操作各種機械、儀器、多媒體等事物，能獨立完成作品，並從中得到成就感。生活隨興自由，比較不重視規範。</div>
+          <div class="soul-stat">僅 <em>6%</em> 的人與黃義祥結果相同 · 屬於罕見型態</div>
+        </div>
+        <div class="holland-card">
+          <div class="hc-code">A × R</div>
+          <div class="hc-title">興趣何倫碼：藝術型 × 實作型</div>
+          <div class="hc-items">
+            <div class="hc-item">
+              <div class="hc-item-label">A — 藝術型</div>
+              <div class="hc-item-text">直覺敏銳，富有創意，不受傳統限制。偏好自由表達、富有想像力的工作，善於以影像、數位媒材傳達想法。</div>
+            </div>
+            <div class="hc-item">
+              <div class="hc-item-label">R — 實作型</div>
+              <div class="hc-item-text">擅長操作工具與設備，具備良好動手能力。偏好具體明確的任務，能在實際操作中找到成就感。</div>
+            </div>
+            <div class="hc-item" style="background:rgba(201,168,92,.05);border:1px solid rgba(201,168,92,.15);">
+              <div class="hc-item-label" style="color:var(--gold);">AR 複合型職涯優勢</div>
+              <div class="hc-item-text">藝術感知力 × 技術實作力的罕見組合，特別適合 AI 工具開發、互動媒體、影視技術整合等「創意技術」型職位。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 JOBS -->
+  <div class="slide" id="s2">
+    <div class="eyebrow" data-n="02">Target Positions</div>
+    <h2>興趣<em>職位</em></h2>
+    <p style="font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.06em;color:var(--muted);margin-bottom:1.8rem;">來源：104 人力銀行 ／ 搜尋：AI 應用開發、AIoT、MIS</p>
+    <div class="jobs-grid">
+      <div class="job-card j1">
+        <div class="j-num">01</div>
+        <div class="j-cat">AI Application Development</div>
+        <div class="j-title">AI 應用開發工程師</div>
+        <div class="j-co">公益媒體科技股份有限公司 · 台北市信義區</div>
+        <div class="j-meta">
+          <span class="jm">月薪 35,000–50,000</span>
+          <span class="jm">全職 · 日班</span>
+          <span class="jm">媒體 / 數位內容</span>
+        </div>
+        <div class="j-section">主要工作內容</div>
+        <ul class="jlist">
+          <li>開發 AI 輔助影片製作工具（自動分鏡、字幕）</li>
+          <li>建置 RESTful API，串接 Gemini / OpenAI 模型</li>
+          <li>管理 Vercel / Railway / GCP 雲端平台維運</li>
+          <li>評估新興 AI 技術並提出導入方案</li>
+        </ul>
+        <div class="j-section">應徵條件</div>
+        <ul class="jlist">
+          <li>資管、資工相關科系，熟悉 Python / JavaScript</li>
+          <li>具備 FastAPI 後端開發經驗</li>
+          <li>LLM API 串接（Gemini、OpenAI）經驗優先</li>
+        </ul>
+        <div class="s-pills">
+          <span class="sp">Python</span><span class="sp">FastAPI</span>
+          <span class="sp">Gemini API</span><span class="sp">Vercel</span>
+          <span class="sp">REST API</span><span class="sp">Git</span>
+        </div>
+      </div>
+      <div class="job-card j2">
+        <div class="j-num">02</div>
+        <div class="j-cat">AIoT / Firmware Engineering</div>
+        <div class="j-title">AIoT 應用開發 ／ 韌體工程師</div>
+        <div class="j-co">智慧製造科技股份有限公司 · 台中市工業區</div>
+        <div class="j-meta">
+          <span class="jm">月薪 38,000–55,000</span>
+          <span class="jm">全職 · 日班</span>
+          <span class="jm">智慧製造 / IoT</span>
+        </div>
+        <div class="j-section">主要工作內容</div>
+        <ul class="jlist">
+          <li>開發嵌入式系統韌體，整合感測器通訊模組</li>
+          <li>設計 AIoT 裝置與雲端平台資料傳輸協議</li>
+          <li>建置邊緣 AI 推理模組，實現本地端影像辨識</li>
+          <li>維護 MQTT / HTTP 通訊介面與設備驅動程式</li>
+        </ul>
+        <div class="j-section">應徵條件</div>
+        <ul class="jlist">
+          <li>資管、電子、電機相關科系，熟悉 C / C++</li>
+          <li>了解 RTOS、Linux 嵌入式系統開發</li>
+          <li>Raspberry Pi / Arduino 實作經驗優先</li>
+        </ul>
+        <div class="s-pills">
+          <span class="sp g">C / C++</span><span class="sp g">Python</span>
+          <span class="sp g">Raspberry Pi</span><span class="sp g">MQTT</span>
+          <span class="sp g">Linux</span><span class="sp g">Edge AI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3 AUTOBIOGRAPHY -->
+  <div class="slide" id="s3">
+    <div class="eyebrow" data-n="03">Autobiography</div>
+    <h2>自傳<em>履歷</em></h2>
+    <div class="bio-layout">
+      <div class="resume-col">
+        <div class="resume-target">
+          <span class="resume-target-label">應徵職務</span>
+          <span class="resume-target-val">AI 應用開發工程師</span>
+        </div>
+        <div class="resume-block">
+          <div class="resume-block-header">基本資料</div>
+          <div class="info-grid">
+            <div class="info-item"><div class="info-item-label">姓名</div><div class="info-item-val">黃義祥</div></div>
+            <div class="info-item"><div class="info-item-label">出生年月日</div><div class="info-item-val">2005 / 09 / 21</div></div>
+            <div class="info-item"><div class="info-item-label">就讀學校</div><div class="info-item-val">靜宜大學 資管系 大二</div></div>
+            <div class="info-item"><div class="info-item-label">學號</div><div class="info-item-val">411322388</div></div>
+            <div class="info-item"><div class="info-item-label">手機</div><div class="info-item-val">0983-266-319</div></div>
+            <div class="info-item"><div class="info-item-label">Email</div><div class="info-item-val">alan20050921@gmail.com</div></div>
+          </div>
+        </div>
+
+        <!-- 證照 — 可點擊查看 -->
+        <div class="resume-block">
+          <div class="resume-block-header">證照經歷 <span style="font-size:.55rem;color:var(--muted);letter-spacing:.06em;font-weight:400;">（點擊查看證照）</span></div>
+          <div class="cert-list">
+            <div class="cert-item" onclick="openPdf('ICDL_AI證照.pdf','ICDL — Artificial Intelligence')">
+              <div class="cert-badge icdl">AI</div>
+              <div class="cert-body">
+                <div class="cert-name">ICDL — Artificial Intelligence</div>
+                <div class="cert-meta">ICDL Asia &nbsp;·&nbsp; 2024 / 11 / 19</div>
+                <div class="cert-id">Serial No. 6623928 &nbsp;·&nbsp; TW0000016490</div>
+              </div>
+              <span class="cert-view-hint">查看 PDF →</span>
+            </div>
+            <div class="cert-item" onclick="openPdf('ICDL_IT證照.pdf','ICDL — IT Security')">
+              <div class="cert-badge icdl">IT</div>
+              <div class="cert-body">
+                <div class="cert-name">ICDL — IT Security</div>
+                <div class="cert-meta">ICDL Asia &nbsp;·&nbsp; 2025 / 05 / 05</div>
+                <div class="cert-id">Serial No. 6646639 &nbsp;·&nbsp; TW0000016490</div>
+              </div>
+              <span class="cert-view-hint">查看 PDF →</span>
+            </div>
+            <div class="cert-item" onclick="openPdf('BI規劃師_初級.pdf','BI 規劃師初級證照')">
+              <div class="cert-badge erps">BI</div>
+              <div class="cert-body">
+                <div class="cert-name">BI 規劃師初級（商業智慧）</div>
+                <div class="cert-meta">中華企業資源規劃學會 CERPS &nbsp;·&nbsp; 2025 / 12</div>
+                <div class="cert-id">Certificate ID: GP0115606170</div>
+              </div>
+              <span class="cert-view-hint">查看 PDF →</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 作品集 -->
+        <div class="resume-block">
+          <div class="resume-block-header">作品集</div>
+          <div class="proj-list">
+            <!-- 樂之聲 — 可點擊看報告 PDF -->
+            <div class="proj-item has-pdf" onclick="openPdf('樂之聲APP報告.pdf','樂之聲 App 專案報告')">
+              <div class="proj-top">
+                <span class="proj-name">🎵 樂之聲 App<span class="proj-pdf-hint">查看報告</span></span>
+                <a class="proj-link" href="https://github.com/xuelin123yt/Sound-Interaction-App.git" target="_blank" onclick="event.stopPropagation()">GitHub →</a>
+              </div>
+              <div class="proj-desc">專為心智障礙 / 自閉症兒童（6–12 歲）設計的音樂互動 Android App，擔任專案組長，負責企劃、開發、測試與報告全流程。</div>
+              <div class="proj-tags">
+                <span class="proj-tag">Kotlin</span><span class="proj-tag">Android Studio</span>
+                <span class="proj-tag">Firebase</span><span class="proj-tag">MVVM</span>
+                <span class="proj-tag">公益專案</span>
+              </div>
+            </div>
+            <div class="proj-item">
+              <div class="proj-top">
+                <span class="proj-name">🎬 超級導演分鏡系統</span>
+                <a class="proj-link" href="https://github.com/yixianghuang2005/ai-director-studio.git" target="_blank">GitHub →</a>
+              </div>
+              <div class="proj-desc">AI 輔助分鏡生成的雲端應用，整合 Google Gemini 影像生成，FastAPI 後端部署於 Railway，前端部署於 Vercel。</div>
+              <div class="proj-tags">
+                <span class="proj-tag">Python</span><span class="proj-tag">FastAPI</span>
+                <span class="proj-tag">Gemini API</span><span class="proj-tag">Vercel</span>
+                <span class="proj-tag">Railway</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sec-sub">個人自傳</div>
+        <div class="auto-t">
+          <p>我是黃義祥，目前就讀於靜宜大學資訊管理學系。我具備「外在活潑、內在沉穩」的性格特質，擅長在腦中建構出完整方案後，再以高效率的行動力付諸實踐。我對職涯發展具備高度的企圖心，並深信<span class="hl">卓越的收入必須建立在深厚的技術實力之上</span>。</p>
+  
+          <p>根據 UCAN 職業興趣探索，我的性格代碼為 <span class="hl">RIS（實用 · 研究 · 社會）</span>，其中「實用型」獲得 12 分滿分（PR99）。這項結果充分體現了我對「動手解決真實問題」的熱忱，與我設定的 AIoT 研發工程師及 AI 應用工程師目標精準契合。此外，測驗也印證了我具備將「藝術創意」與「實作技術」互補的能力，這正是我能獨立完成「超級導演分鏡系統」的核心優勢。</p>
+  
+          <p>我偏好透過「解決問題」來驅動學習。大二下學期，我參與了 NPO Channel 的「挺好競賽」，在執行 AI 短影音行銷專案時，為突破製作瓶頸，我主動開發了「超級導演分鏡系統」，這讓我深刻體悟到<span class="hl">技術的價值在於精準解決實際的使用需求</span>。目前我正持續投入該系統的迭代與 Local GPU 影片生成技術研究，並同時主導「SoundJoy」音樂互動 App 從企劃到測試的完整生命週期。</p>
+  
+          <p>我為自己設定了具備清晰挑戰性的目標：在十年內，成為一名能為上市公司創造實質價值的 <span class="hl">AI 應用與 AIoT 相關工程師</span>。我將持續精進 LLM API 串接、Edge AI 邊緣運算及 RTOS 嵌入式系統開發等關鍵技術，將對家人的承諾轉化為持續研發的動力，以卓越穩定的專業表現，在科技領域實踐個人價值。</p>
+        </div>
+        <div class="c-strip">
+          <div>
+            <div class="c-name">黃義祥</div>
+            <div class="c-sub">靜宜大學 資管系 · 411322388</div>
+          </div>
+          <div class="c-links">
+            <a href="https://github.com/yixianghuang2005/ai-director-studio" target="_blank">GitHub</a>
+            <a href="mailto:alan20050921@gmail.com">Gmail</a>
+            <a href="tel:0983266319">0983-266-319</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4 FUTURE PATH -->
+  <div class="slide" id="s4">
+    <div class="eyebrow" data-n="04">Future Roadmap</div>
+    <h2>未來<em>路徑</em></h2>
+    <div class="future-header">
+      <p>從現在到十年後的具體目標與行動計畫，每一個里程碑都是下一步的跳板。</p>
+    </div>
+    <div class="timeline-road">
+      <div class="tl-spine"></div>
+      <div class="tl-node now">
+        <div class="tl-card" data-delay="0">
+          <div class="tl-phase">現在 · 大二下</div>
+          <div class="tl-card-title">持續累積實力</div>
+          <ul class="goal-list">
+            <li>超級導演分鏡系統 v2 開發中</li>
+            <li>探索本地 GPU 影片生成（LTX-Video-2）</li>
+            <li>NPO 公益影像製作技術負責</li>
+            <li>資管系課業全力以赴</li>
+          </ul>
+        </div>
+        <div class="tl-dot-wrap"><div class="tl-dot">現</div><div class="tl-year-label">Now</div></div>
+        <div class="tl-empty"></div>
+      </div>
+      <div class="tl-node yr1">
+        <div class="tl-empty"></div>
+        <div class="tl-dot-wrap"><div class="tl-dot">1</div><div class="tl-year-label">1 Year</div></div>
+        <div class="tl-card right" data-delay="150">
+          <div class="tl-phase">一年目標 · 大三</div>
+          <div class="tl-card-title">學業 × 技術 雙軌並進</div>
+          <ul class="goal-list">
+            <li>系排名維持前 1–2%</li>
+            <li>國科會大專生研究計畫申請</li>
+            <li>CPE 程式能力認證，每天練 10 題</li>
+            <li>多益 600 分以上，每天背 50 單字</li>
+            <li>準備畢業專題主題與組員</li>
+            <li>競賽參與，發揮學以致用</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tl-node yr3">
+        <div class="tl-card" data-delay="300">
+          <div class="tl-phase">三年目標 · 大四 → 研究所</div>
+          <div class="tl-card-title">升學 × 專業證照</div>
+          <ul class="goal-list">
+            <li>推甄上國立研究所（豐富大學經歷 + 證照 + 競賽）</li>
+            <li>iPAS 資訊安全工程師認證</li>
+            <li>iPAS 工業物聯網應用工程師認證</li>
+            <li>參加黑客松，熟悉專案開發全流程</li>
+            <li>Vibe Coding 能力持續精進</li>
+          </ul>
+        </div>
+        <div class="tl-dot-wrap"><div class="tl-dot">3</div><div class="tl-year-label">3 Years</div></div>
+        <div class="tl-empty"></div>
+      </div>
+      <div class="tl-node yr10">
+        <div class="tl-empty"></div>
+        <div class="tl-dot-wrap"><div class="tl-dot">10</div><div class="tl-year-label">10 Years</div></div>
+        <div class="tl-card right" data-delay="450">
+          <div class="tl-phase">十年目標 · 職涯 × 生活</div>
+          <div class="tl-card-title">成為 AIoT 工程師，過好日子</div>
+          <ul class="goal-list">
+            <li>成為 AIoT 相關工程師，深耕軟硬整合</li>
+            <li>進入上市公司，月薪 6 萬以上</li>
+            <li>先去跳板公司養足經歷與人脈</li>
+            <li>還完學貸，買車</li>
+            <li>帶家人出國旅行</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ </div><!-- /track -->
+</div><!-- /stage -->
+
+<div id="dots">
+  <div class="dot active" onclick="goTo(0)"></div>
+  <div class="dot" onclick="goTo(1)"></div>
+  <div class="dot" onclick="goTo(2)"></div>
+  <div class="dot" onclick="goTo(3)"></div>
+  <div class="dot" onclick="goTo(4)"></div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ── PDF Modal ── */
+function openPdf(filename, title) {
+  document.getElementById('pdfModalTitle').textContent = title || '文件檢視';
+  document.getElementById('pdfIframe').src = filename;
+  document.getElementById('pdfModal').classList.add('open');
+}
+function closePdfModal(e) {
+  if (e && e.target !== document.getElementById('pdfModal')) return;
+  document.getElementById('pdfModal').classList.remove('open');
+  document.getElementById('pdfIframe').src = '';
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.getElementById('pdfModal').classList.remove('open');
+    document.getElementById('pdfIframe').src = '';
+  }
+});
+
+/* ── Canvas orb animation ── */
+(function(){
+  var cv = document.getElementById('hero-canvas');
+  if(!cv) return;
+  var ctx = cv.getContext('2d');
+  function resize(){ cv.width=cv.offsetWidth||window.innerWidth; cv.height=cv.offsetHeight||window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  var COLORS=['rgba(77,111,160,','rgba(196,144,64,','rgba(184,114,114,','rgba(200,190,170,'];
+  var ORBS=[]; for(var i=0;i<28;i++) ORBS.push({x:Math.random(),y:Math.random(),r:40+Math.random()*120,alpha:0.025+Math.random()*0.06,vx:(Math.random()-.5)*0.00015,vy:(Math.random()-.5)*0.00015,phase:Math.random()*Math.PI*2,speed:0.003+Math.random()*0.008,color:COLORS[Math.floor(Math.random()*COLORS.length)]});
+  var STARS=[]; for(var j=0;j<60;j++) STARS.push({x:Math.random(),y:Math.random(),r:0.5+Math.random()*1.2,alpha:0.1+Math.random()*0.4,twinkle:Math.random()*Math.PI*2,speed:0.005+Math.random()*0.015});
+  function draw(){
+    var W=cv.width,H=cv.height; ctx.clearRect(0,0,W,H);
+    ORBS.forEach(function(o){ o.phase+=o.speed; var ox=(o.x+Math.sin(o.phase*.7)*.08)*W,oy=(o.y+Math.cos(o.phase*.5)*.06)*H,grd=ctx.createRadialGradient(ox,oy,0,ox,oy,o.r); grd.addColorStop(0,o.color+o.alpha+')'); grd.addColorStop(1,o.color+'0)'); ctx.beginPath(); ctx.arc(ox,oy,o.r,0,Math.PI*2); ctx.fillStyle=grd; ctx.fill(); });
+    STARS.forEach(function(s){ s.twinkle+=s.speed; var a=s.alpha*(0.5+0.5*Math.sin(s.twinkle)); ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2); ctx.fillStyle='rgba(242,237,224,'+a+')'; ctx.fill(); });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── UCAN bars data ── */
+const UCAN_C=[
+  {label:'人際互動',score:4.83,pr:88},{label:'資訊科技應用',score:4.75,pr:87},
+  {label:'團隊合作',score:4.71,pr:86},{label:'問題解決',score:4.67,pr:89},
+  {label:'創新',score:4.67,pr:90},{label:'工作責任及紀律',score:4.57,pr:76},
+  {label:'溝通表達',score:4.29,pr:81},{label:'持續學習',score:4.29,pr:79},
+];
+const CLUSTERS=[
+  {name:'資訊科技',score:4.10,pr:97,top:true},{name:'企業經營管理',score:3.50,pr:94,top:true},
+  {name:'科技工程數學',score:3.50,pr:93,top:true},{name:'物流運輸',score:3.50,pr:96,top:true},
+  {name:'建築營造',score:3.20,pr:87,top:false},{name:'製造',score:3.20,pr:91,top:false},
+  {name:'司法公共安全',score:3.20,pr:84,top:false},{name:'休閒觀光旅遊',score:3.20,pr:77,top:false},
+  {name:'教育與訓練',score:2.90,pr:69,top:false},{name:'政府公共事務',score:2.90,pr:84,top:false},
+  {name:'天然資源農業',score:2.60,pr:86,top:false},{name:'醫療保健',score:2.60,pr:71,top:false},
+  {name:'個人社會服務',score:2.60,pr:62,top:false},{name:'行銷與銷售',score:2.60,pr:80,top:false},
+  {name:'藝文影音傳播',score:2.35,pr:73,top:false},{name:'金融財務',score:2.35,pr:73,top:false},
+];
+function buildBars(){
+  document.getElementById('ucanBars').innerHTML=UCAN_C.map(d=>{
+    const pct=(d.score/5)*100, cls=d.score>=4.5?'ace':'mid';
+    return `<div class="bar-row"><div class="bar-label">${d.label}</div><div class="bar-track"><div class="bar-fill ${cls}" style="width:0%" data-pct="${pct.toFixed(1)}"></div></div><div class="bar-meta"><span class="score">${d.score.toFixed(2)}</span><span class="pr"> PR${d.pr}</span></div></div>`;
+  }).join('');
+}
+function buildClusters(){
+  document.getElementById('clusterGrid').innerHTML=CLUSTERS.map(d=>`<div class="cluster-card${d.top?' top':''}"><div class="cc-name">${d.name}</div><div class="cc-score">${d.score.toFixed(2)}</div><div class="cc-pr">PR ${d.pr}</div></div>`).join('');
+}
+function animateBars(){ document.querySelectorAll('.bar-fill').forEach(el=>{el.style.width=el.dataset.pct+'%';}); }
+buildBars(); buildClusters();
+
+/* ── Sub-tabs ── */
+function switchTab(n){
+  document.querySelectorAll('.sub-tab').forEach((t,i)=>t.classList.toggle('active',i===n));
+  document.querySelectorAll('.sub-panel').forEach((p,i)=>p.classList.toggle('active',i===n));
+}
+
+/* ── Timeline ── */
+function animateTimeline(){
+  document.querySelectorAll('.tl-card').forEach(card=>{
+    setTimeout(()=>{ card.classList.add('visible'); }, +(card.dataset.delay||0));
+  });
+}
+
+/* ── Slide navigation ── */
+const TOTAL=5; let cur=0;
+const track=document.getElementById('track');
+const btns=document.querySelectorAll('#nav button');
+const dots=document.querySelectorAll('.dot');
+const arrowL=document.getElementById('arrowL');
+const arrowR=document.getElementById('arrowR');
+const curEl=document.getElementById('cur');
+function goTo(n){
+  n=Math.max(0,Math.min(TOTAL-1,n)); cur=n;
+  track.style.transform=`translateX(${-n*100}vw)`;
+  btns.forEach((b,i)=>b.classList.toggle('active',i===n));
+  dots.forEach((d,i)=>d.classList.toggle('active',i===n));
+  arrowL.disabled=n===0; arrowR.disabled=n===TOTAL-1;
+  curEl.textContent=String(n+1).padStart(2,'0');
+  document.querySelectorAll('.slide')[n].scrollTop=0;
+  if(n===1) setTimeout(animateBars,300);
+  if(n===4) setTimeout(animateTimeline,200);
+}
+btns.forEach(b=>b.addEventListener('click',()=>goTo(+b.dataset.i)));
+arrowL.addEventListener('click',()=>goTo(cur-1));
+arrowR.addEventListener('click',()=>goTo(cur+1));
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('pdfModal').classList.contains('open')) return;
+  if(e.key==='ArrowRight') goTo(cur+1);
+  if(e.key==='ArrowLeft') goTo(cur-1);
+});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>50) goTo(dx<0?cur+1:cur-1);
+},{passive:true});
+
+/* ── Hero card slider ── */
+(function(){
+  var slides  = document.querySelectorAll('.hslide');
+  var dots    = document.querySelectorAll('.hsdot');
+  var wrap    = document.querySelector('.hero-slider');
+  var cur     = 0;
+  var total   = slides.length;
+  var ratios  = new Array(total).fill(null); // store w/h ratio per slide
+
+  // Pre-load all images and record their natural aspect ratios
+  slides.forEach(function(s, i){
+    var img = s.querySelector('img');
+    function onLoad(){
+      if(img.naturalWidth && img.naturalHeight){
+        ratios[i] = img.naturalWidth / img.naturalHeight;
+      }
+      if(i === cur) applyRatio(cur);
+    }
+    if(img.complete && img.naturalWidth) onLoad();
+    else { img.addEventListener('load', onLoad); }
+  });
+
+  // Resize the slider container to match the active photo's ratio
+  function applyRatio(i){
+    var r = ratios[i];
+    if(!r) return;
+    var maxH = Math.min(window.innerHeight * 0.68, 580);
+    var maxW = wrap.parentElement.offsetWidth * 0.96;
+    var w, h;
+    if(r >= 1){           // landscape
+      w = Math.min(maxW, maxH * r);
+      h = w / r;
+    } else {              // portrait
+      h = Math.min(maxH, maxW / r);
+      w = h * r;
+    }
+    wrap.style.transition = 'width .6s cubic-bezier(.77,0,.18,1), height .6s cubic-bezier(.77,0,.18,1)';
+    wrap.style.width  = w + 'px';
+    wrap.style.height = h + 'px';
+  }
+
+  function setSlide(i){
+    slides.forEach(function(s, idx){
+      var offset = (idx - i + total) % total;
+      if(offset === 0){
+        s.style.transform = 'translateZ(0) translateY(0) rotateY(0deg)';
+        s.style.opacity   = '1';
+        s.style.zIndex    = '4';
+        s.classList.add('active');
+      } else if(offset === 1){
+        s.style.transform = 'translateX(6%) translateY(2%) rotateY(-5deg) scale(.96)';
+        s.style.opacity   = '.7';
+        s.style.zIndex    = '3';
+        s.classList.remove('active');
+      } else if(offset === 2){
+        s.style.transform = 'translateX(11%) translateY(4%) rotateY(-9deg) scale(.92)';
+        s.style.opacity   = '.45';
+        s.style.zIndex    = '2';
+        s.classList.remove('active');
+      } else {
+        s.style.transform = 'translateX(15%) translateY(6%) rotateY(-13deg) scale(.88)';
+        s.style.opacity   = '.2';
+        s.style.zIndex    = '1';
+        s.classList.remove('active');
+      }
+    });
+    dots.forEach(function(d,idx){ d.classList.toggle('active', idx===i); });
+    applyRatio(i);
+  }
+
+  setSlide(0);
+
+  var timer = setInterval(function(){ cur=(cur+1)%total; setSlide(cur); }, 2800);
+
+  dots.forEach(function(d,i){
+    d.addEventListener('click', function(){
+      cur=i; setSlide(cur);
+      clearInterval(timer);
+      timer=setInterval(function(){ cur=(cur+1)%total; setSlide(cur); }, 2800);
+    });
+  });
+
+  wrap.addEventListener('click', function(){
+    cur=(cur+1)%total; setSlide(cur);
+    clearInterval(timer);
+    timer=setInterval(function(){ cur=(cur+1)%total; setSlide(cur); }, 2800);
+  });
+
+  window.addEventListener('resize', function(){ applyRatio(cur); });
+})();
+
+/* ── Custom cursor ── */
+(function(){
+  var ring=document.createElement('div'); ring.id='cur-ring';
+  var dot=document.createElement('div');  dot.id='cur-dot';
+  document.body.appendChild(ring);
+  document.body.appendChild(dot);
+  var style=document.createElement('style');
+  style.textContent=`
+    *{cursor:none!important;}
+    #cur-ring{
+      position:fixed;pointer-events:none;z-index:99999;
+      width:28px;height:28px;border-radius:50%;
+      border:1.5px solid rgba(196,144,64,.75);
+      transform:translate(-50%,-50%);
+      transition:width .18s ease,height .18s ease,border-color .18s ease,background .18s ease;
+      will-change:left,top;
+    }
+    #cur-ring.h{
+      width:48px;height:48px;
+      background:rgba(196,144,64,.08);
+      border-color:rgba(242,237,224,.8);
+    }
+    #cur-dot{
+      position:fixed;pointer-events:none;z-index:99999;
+      width:5px;height:5px;border-radius:50%;
+      background:rgba(196,144,64,.9);
+      transform:translate(-50%,-50%);
+    }
+  `;
+  document.head.appendChild(style);
+  var rx=0,ry=0,dx=0,dy=0;
+  document.addEventListener('mousemove',function(e){
+    dx=e.clientX; dy=e.clientY;
+    dot.style.left=dx+'px'; dot.style.top=dy+'px';
+  });
+  function lerp(a,b,t){return a+(b-a)*t;}
+  function animate(){
+    rx=lerp(rx,dx,0.12); ry=lerp(ry,dy,0.12);
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(animate);
+  }
+  animate();
+  document.querySelectorAll('a,button,.cert-item,.proj-item,.job-card,.tl-card,[onclick]').forEach(function(el){
+    el.addEventListener('mouseenter',function(){ring.classList.add('h');});
+    el.addEventListener('mouseleave',function(){ring.classList.remove('h');});
+  });
+})();
+</script>
+</body>
+</html>
