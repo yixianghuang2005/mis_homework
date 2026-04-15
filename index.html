@@ -778,6 +778,12 @@
     letter-spacing:.1em;
     transform-origin:center top;
   }
+  /* 手機版 hover 年份標籤：不放大，只變色，避免超出畫面 */
+  .tl-node:has(.tl-card:hover) .tl-year-label,
+  .tl-node:hover .tl-year-label {
+    transform:none;
+    letter-spacing:.12em;
+  }
 
   .tl-dot { width: 36px; height: 36px; font-size: .82rem; }
   /* 手機版 glow 縮小比例對應 */
@@ -1496,16 +1502,17 @@ document.addEventListener('touchend',e=>{
   });
 
   function applyRatio(i){
-    // On mobile (≤900px), let CSS control the dimensions — don't set inline styles
-    if (window.innerWidth <= 900) {
-      wrap.style.width  = '';
-      wrap.style.height = '';
-      return;
-    }
     var r = ratios[i];
     if(!r) return;
-    var maxH = Math.min(window.innerHeight * 0.68, 580);
-    var maxW = wrap.parentElement.offsetWidth * 0.96;
+    var isMobile = window.innerWidth <= 900;
+    var maxH, maxW;
+    if(isMobile){
+      maxW = wrap.parentElement.offsetWidth || window.innerWidth * 0.9;
+      maxH = Math.min(window.innerHeight * 0.45, 320);
+    } else {
+      maxH = Math.min(window.innerHeight * 0.68, 580);
+      maxW = wrap.parentElement.offsetWidth * 0.96;
+    }
     var w, h;
     if(r >= 1){
       w = Math.min(maxW, maxH * r);
@@ -1567,12 +1574,7 @@ document.addEventListener('touchend',e=>{
   });
 
   window.addEventListener('resize', function(){
-    if (window.innerWidth <= 900) {
-      wrap.style.width  = '';
-      wrap.style.height = '';
-    } else {
-      applyRatio(cur);
-    }
+    applyRatio(cur);
   });
 })();
 
