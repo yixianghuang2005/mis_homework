@@ -85,6 +85,7 @@
       width:100vw;height:100%;overflow-y:auto;overflow-x:hidden;
       flex-shrink:0;padding:80px 5vw 4rem;
       scrollbar-width:thin;scrollbar-color:var(--gold-d) transparent;
+      -webkit-overflow-scrolling:touch;
     }
     .slide::-webkit-scrollbar{width:3px;}
     .slide::-webkit-scrollbar-thumb{background:var(--gold-d);border-radius:2px;}
@@ -1400,11 +1401,16 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight') goTo(cur+1);
   if(e.key==='ArrowLeft') goTo(cur-1);
 });
-let tx=0;
-document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+let tx=0, ty=0;
+document.addEventListener('touchstart',e=>{
+  tx=e.touches[0].clientX;
+  ty=e.touches[0].clientY;
+},{passive:true});
 document.addEventListener('touchend',e=>{
   const dx=e.changedTouches[0].clientX-tx;
-  if(Math.abs(dx)>50) goTo(dx<0?cur+1:cur-1);
+  const dy=e.changedTouches[0].clientY-ty;
+  // 只有水平滑動幅度 > 垂直滑動才切頁（避免干擾上下滾動）
+  if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)*1.5) goTo(dx<0?cur+1:cur-1);
 },{passive:true});
 
 /* ── Hero card slider ── */
