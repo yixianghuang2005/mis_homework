@@ -578,10 +578,14 @@
     .tl-card.right{transform:translateX(20px);}
     .tl-card.visible{opacity:1;transform:translateX(0);}
     .tl-card:hover{
-      border-color:rgba(76,175,130,.55);
-      background:rgba(76,175,130,.04);
-      box-shadow:0 0 0 1px rgba(76,175,130,.15), 0 0 24px 4px rgba(76,175,130,.1), inset 0 0 20px rgba(76,175,130,.04);
+      border-color:rgba(76,175,130,.8);
+      background:rgba(76,175,130,.07);
+      box-shadow:0 0 0 1px rgba(76,175,130,.3), 0 0 30px 6px rgba(76,175,130,.15), inset 0 0 24px rgba(76,175,130,.06);
     }
+    /* 框框 hover 時標題和文字更亮 */
+    .tl-card:hover .tl-card-title{ color:#fff; text-shadow:0 0 12px rgba(76,175,130,.3); }
+    .tl-card:hover .tl-phase{ opacity:1; filter:brightness(1.3); }
+    .tl-card:hover .goal-list li{ color:#c8c0ac; }
     .tl-empty{}
     .tl-phase{font-family:'Space Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.6rem;}
     .now .tl-phase{color:var(--green);}
@@ -760,17 +764,32 @@
   .tl-node:nth-child(odd) .tl-empty,
   .tl-node:nth-child(even) .tl-empty { display: none; }
 
-  /* Odd nodes: dot | card */
+  /* All nodes: dot | card (both sides same on mobile) */
   .tl-node:nth-child(odd) .tl-dot-wrap { grid-column: 1; grid-row: 1; }
   .tl-node:nth-child(odd) .tl-card    { grid-column: 2; grid-row: 1; transform: translateX(12px) !important; }
   .tl-node:nth-child(odd) .tl-card.visible { transform: translateX(0) !important; }
-
-  /* Even nodes: dot | card */
   .tl-node:nth-child(even) .tl-dot-wrap { grid-column: 1; grid-row: 1; }
   .tl-node:nth-child(even) .tl-card    { grid-column: 2; grid-row: 1; transform: translateX(12px) !important; }
   .tl-node:nth-child(even) .tl-card.visible { transform: translateX(0) !important; }
 
+  /* 手機版年份標籤：回到圓圈正下方，取消桌機的絕對橫向定位 */
+  .tl-node:nth-child(odd) .tl-year-label,
+  .tl-node:nth-child(even) .tl-year-label {
+    position:static;
+    display:block;
+    text-align:center;
+    margin-top:.35rem;
+    font-size:.6rem;
+    letter-spacing:.1em;
+    transform-origin:center top;
+  }
+
   .tl-dot { width: 36px; height: 36px; font-size: .82rem; }
+  /* 手機版 glow 縮小比例對應 */
+  .tl-node:has(.tl-card:hover) .tl-dot,
+  .tl-node:hover .tl-dot {
+    box-shadow:0 0 0 4px var(--bg), 0 0 0 6px rgba(76,175,130,.25), 0 0 14px 4px rgba(76,175,130,.2);
+  }
   .tl-spine { left: 18px; }
   .tl-card { padding: 1rem; }
 
