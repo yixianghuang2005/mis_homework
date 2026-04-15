@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>黃義祥 · 靜宜大學資管系</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@300;400;600;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -79,13 +79,14 @@
     .dot.active{background:var(--gold);transform:scale(1.4);}
 
     /* ══ STAGE ══ */
-    #stage{position:fixed;inset:0;overflow:hidden;}
+    #stage{position:fixed;inset:0;overflow:hidden;touch-action:pan-y;}
     #track{display:flex;width:calc(5*100vw);height:100%;transition:transform var(--trans);will-change:transform;}
     .slide{
       width:100vw;height:100%;overflow-y:auto;overflow-x:hidden;
       flex-shrink:0;padding:80px 5vw 4rem;
       scrollbar-width:thin;scrollbar-color:var(--gold-d) transparent;
       -webkit-overflow-scrolling:touch;
+      touch-action:pan-y;
     }
     .slide::-webkit-scrollbar{width:3px;}
     .slide::-webkit-scrollbar-thumb{background:var(--gold-d);border-radius:2px;}
@@ -855,7 +856,7 @@
 <body>
 
 <!-- ── Video Background ── -->
-<video id="bg-video" autoplay loop muted playsinline>
+<video id="bg-video" autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5" preload="auto">
   <source src="back.mp4" type="video/mp4">
 </video>
 
@@ -1295,7 +1296,19 @@
 </div>
 
 <script>
-/* ── PDF Modal ── */
+/* ── iOS video force autoplay ── */
+(function(){
+  var v = document.getElementById('bg-video');
+  if(!v) return;
+  v.muted = true;
+  v.play().catch(function(){
+    // If autoplay blocked, try on first touch
+    document.addEventListener('touchstart', function tryPlay(){
+      v.play();
+      document.removeEventListener('touchstart', tryPlay);
+    }, {once:true, passive:true});
+  });
+})();
 function openPdf(filename, title) {
   document.getElementById('pdfModalTitle').textContent = title || '文件檢視';
   document.getElementById('pdfIframe').src = filename;
