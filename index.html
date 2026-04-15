@@ -524,6 +524,21 @@
     .tl-node:nth-child(odd){grid-template-columns:1fr 60px 1fr;}
     .tl-node:nth-child(even){grid-template-columns:1fr 60px 1fr;}
     .tl-dot-wrap{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:.5rem;position:relative;z-index:1;}
+    /* tl-spine 是第1個子元素，所以 now=偶、yr1=奇，規則對調 */
+    /* even(now, yr3): card左 → label貼右 */
+    .tl-node:nth-child(even) .tl-year-label{
+      position:absolute;
+      top:.5rem;
+      left:calc(100% + 6px);
+      transform-origin:left center;
+    }
+    /* odd(yr1, yr10): card右 → label貼左 */
+    .tl-node:nth-child(odd) .tl-year-label{
+      position:absolute;
+      top:.5rem;
+      right:calc(100% + 6px);
+      transform-origin:right center;
+    }
     .tl-dot{
       width:44px;height:44px;border-radius:50%;
       border:2px solid var(--gold);
@@ -532,27 +547,41 @@
       font-family:'Ma Shan Zheng',cursive;font-size:1rem;color:var(--gold);
       flex-shrink:0;position:relative;z-index:2;
       box-shadow:0 0 0 5px var(--bg), 0 0 0 7px rgba(201,168,92,.15);
-      transition:border-color .25s, color .25s, box-shadow .25s, background .25s;
+      transition:border-color .3s, color .3s, box-shadow .3s, background .3s;
     }
     .tl-node:has(.tl-card:hover) .tl-dot,
     .tl-node:hover .tl-dot {
       border-color:#4caf82;color:#4caf82;
-      box-shadow:0 0 0 5px var(--bg), 0 0 0 7px rgba(76,175,130,.2), 0 0 16px 4px rgba(76,175,130,.18);
+      background:var(--bg);
+      box-shadow:0 0 0 5px var(--bg), 0 0 0 7px rgba(76,175,130,.25), 0 0 20px 6px rgba(76,175,130,.22), 0 0 40px 10px rgba(76,175,130,.08);
     }
     .tl-year-label{
-      font-family:'Space Mono',monospace;font-size:.57rem;
+      font-family:'Space Mono',monospace;font-size:.78rem;
       letter-spacing:.18em;color:var(--muted);text-transform:uppercase;
-      margin-top:.5rem;text-align:center;
+      white-space:nowrap;
+      transition:color .3s, transform .3s, letter-spacing .3s;
+      position:absolute;z-index:3;
+    }
+    .tl-node:has(.tl-card:hover) .tl-year-label,
+    .tl-node:hover .tl-year-label {
+      color:var(--red);
+      transform:scale(1.25);
+      letter-spacing:.22em;
     }
     .tl-card{
-      background:var(--surf);border:1px solid rgba(201,168,92,.1);
+      background:var(--surf);
+      border:1px solid rgba(201,168,92,.1);
       padding:1.5rem;
       opacity:0;transform:translateX(-20px);
-      transition:opacity .6s,transform .6s,border-color .3s;
+      transition:opacity .6s, transform .6s, border-color .3s, box-shadow .3s, background .3s;
     }
     .tl-card.right{transform:translateX(20px);}
     .tl-card.visible{opacity:1;transform:translateX(0);}
-    .tl-card:hover{border-color:rgba(196,144,64,.22);}
+    .tl-card:hover{
+      border-color:rgba(76,175,130,.55);
+      background:rgba(76,175,130,.04);
+      box-shadow:0 0 0 1px rgba(76,175,130,.15), 0 0 24px 4px rgba(76,175,130,.1), inset 0 0 20px rgba(76,175,130,.04);
+    }
     .tl-empty{}
     .tl-phase{font-family:'Space Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.6rem;}
     .now .tl-phase{color:var(--green);}
@@ -1196,7 +1225,7 @@
 
           <p>根據 UCAN 職業興趣探索，我的性格代碼為 <span class="hl">RIS（實用 · 研究 · 社會）</span>，其中「實用型」獲得 12 分滿分（PR99）。這項結果充分體現了我對「動手解決真實問題」的熱忱，與我設定的 AIoT 研發工程師及 AI 應用工程師目標精準契合。此外，測驗也印證了我具備將「藝術創意」與「實作技術」互補的能力，這正是我能獨立完成「超級導演分鏡系統」的核心優勢。</p>
 
-          <p>我偏好透過「解決問題」來驅動學習，並已具備完整的軟體開發週期經驗。大二上學期，我在「行動應用軟體開發」課程中，和組員們一起完成了 <span class="hl">「SoundJoy 樂之聲」音樂互動 App</span>，從企劃構想、UI/UX 設計到測試發布，完整走過軟體生命週期，熟練掌握了行動端開發的核心邏輯。</p>
+          <p>我偏好透過「解決問題」來驅動學習，並已具備完整的軟體開發週期經驗。大二上學期，我在「行動應用軟體開發」課程中，獨立完成了 <span class="hl">「SoundJoy 樂之聲」音樂互動 App</span>，從企劃構想、UI/UX 設計到測試發布，完整走過軟體生命週期，熟練掌握了行動端開發的核心邏輯。</p>
 
           <p>大二下學期，我參與 NPO Channel 的「挺好競賽」，執行 AI 短影音行銷專案。為解決影片製作效率的痛點，我主動開發了 <span class="hl">「超級導演分鏡系統」</span>，深刻體悟到<span class="hl">技術的價值在於精準解決實際需求</span>。目前我正持續投入該系統的迭代，深入研究 Local GPU 影片生成技術，追求更高效的 AI 應用整合。</p>
 
