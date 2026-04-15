@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>黃義祥 · 靜宜大學資管系</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@300;400;600;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -79,12 +79,14 @@
     .dot.active{background:var(--gold);transform:scale(1.4);}
 
     /* ══ STAGE ══ */
-    #stage{position:fixed;inset:0;overflow:hidden;}
+    #stage{position:fixed;inset:0;overflow:hidden;touch-action:pan-y;}
     #track{display:flex;width:calc(5*100vw);height:100%;transition:transform var(--trans);will-change:transform;}
     .slide{
       width:100vw;height:100%;overflow-y:auto;overflow-x:hidden;
       flex-shrink:0;padding:80px 5vw 4rem;
       scrollbar-width:thin;scrollbar-color:var(--gold-d) transparent;
+      -webkit-overflow-scrolling:touch;
+      touch-action:pan-y;
     }
     .slide::-webkit-scrollbar{width:3px;}
     .slide::-webkit-scrollbar-thumb{background:var(--gold-d);border-radius:2px;}
@@ -158,13 +160,9 @@
       border:1px solid rgba(196,144,64,.2);
       pointer-events:none;
     }
-    /* back1 — 左上大圖，跨 2 行 */
     .hp1{grid-column:1/2;grid-row:1/3;}
-    /* back2 — 右上 */
     .hp2{grid-column:2/3;grid-row:1/2;}
-    /* back3 — 右下左 */
     .hp3{grid-column:2/3;grid-row:2/3;}
-    /* back4 — 底部通欄 */
     .hero-photos{
       grid-template-rows:1.5fr 1fr 0.8fr;
     }
@@ -218,7 +216,6 @@
       background:#0d0c16;
     }
     .hslide.active img{filter:grayscale(0) contrast(1.08);}
-    /* dot indicators */
     .hslider-dots{
       display:flex;gap:.55rem;
     }
@@ -418,7 +415,6 @@
     .info-item-val a{color:var(--accent);text-decoration:none;}
     .info-item-val a:hover{color:var(--gold);}
 
-    /* cert cards — clickable */
     .cert-list{display:flex;flex-direction:column;gap:1px;background:rgba(255,255,255,.03);}
     .cert-item{
       display:flex;align-items:center;gap:1.2rem;
@@ -453,7 +449,6 @@
       letter-spacing:.06em;color:var(--muted);margin-top:.15rem;opacity:.7;
     }
 
-    /* project cards — clickable for 樂之聲 */
     .proj-list{display:flex;flex-direction:column;gap:1px;background:rgba(255,255,255,.03);}
     .proj-item{
       padding:1rem 1.2rem;background:var(--surf);
@@ -612,33 +607,256 @@
     .pdf-modal-body{flex:1;overflow:hidden;}
     .pdf-modal-body iframe{width:100%;height:100%;border:none;}
 
-    /* ══ RESPONSIVE ══ */
+    /* ══ OLD RESPONSIVE (replaced below) ══ */
     @media(max-width:900px){
-      #topbar{padding:0 .8rem;}
-      #nav button{padding:.55rem .65rem;font-size:.62rem;letter-spacing:.04em;}
       .bar-counter{display:none;}
-      .slide{padding:76px .9rem 5rem;}
-      .jobs-grid,.bio-layout,.panel-104{grid-template-columns:1fr;}
-      .plan-row{grid-template-columns:1fr;}
-      .bar-row{grid-template-columns:90px 1fr 65px;}
-      .c-strip{flex-direction:column;align-items:flex-start;gap:.8rem;}
-      .hero-name-row{gap:1.2rem;}
-      .cluster-grid{grid-template-columns:repeat(2,1fr);}
-      .ris-wrap{flex-direction:column;}
-      .tl-node{grid-template-columns:1fr 44px 1fr!important;}
-      .tl-dot{width:36px;height:36px;font-size:.85rem;}
     }
-    @media(max-width:600px){
-      .cluster-grid{grid-template-columns:1fr 1fr;}
-      #nav button{padding:.45rem .4rem;font-size:.5rem;letter-spacing:.02em;}
-      .hero-name-row{flex-direction:column;align-items:flex-start;gap:1rem;}
-    }
+  
+/* ═══════════════════════════════════════════════
+   RESPONSIVE PATCH — Mobile-first overhaul
+   Covers: 480px / 600px / 768px / 900px
+═══════════════════════════════════════════════ */
+
+/* ── Disable custom cursor on touch devices ── */
+@media (hover: none) {
+  * { cursor: auto !important; }
+  #cur-ring, #cur-dot { display: none !important; }
+}
+
+/* ════════════════════════════════
+   ≤ 900px  (tablet + mobile)
+════════════════════════════════ */
+@media (max-width: 900px) {
+  /* Topbar */
+  #topbar { padding: 0 .6rem; gap: .5rem; }
+  .bar-logo { font-size: 1.1rem; }
+  #nav button { padding: .55rem .55rem; font-size: .62rem; letter-spacing: .04em; }
+  .bar-counter { display: none; }
+
+  /* Slides */
+  .slide { padding: 76px 1rem 5rem; }
+
+  /* Hero — stack vertically */
+  #s0 {
+    /* Allow content to scroll if it overflows */
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .hero-overlay,
+  #hero-canvas {
+    /* Pin background to viewport so it stays visible while scrolling */
+    position: fixed;
+  }
+  .hero-content {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 80px 1.2rem 3rem;   /* 80px = topbar height */
+    gap: 2rem;
+    height: auto;
+    min-height: 100vh;
+  }
+  .hero-text {
+    text-align: center;
+    order: 1;
+    flex: none;
+  }
+  .hero-name-row {
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: .5rem;
+  }
+  h1 { font-size: clamp(3.5rem, 12vw, 5.5rem); }
+  .h-eye {
+    justify-content: center;
+    font-size: .72rem;
+    flex-wrap: wrap;
+    margin-bottom: .8rem;
+  }
+  .h-eye::before { display: none; }
+  .h-desc { max-width: 100%; font-size: .95rem; }
+  .h-cta { text-align: center; margin-top: 1.2rem; }
+
+  /* Hero slider — full width */
+  .hero-slider-wrap {
+    order: 2;
+    flex: none;
+    width: 100%;
+    max-width: 500px;
+    align-items: center;
+    gap: 1rem;
+  }
+  .hero-slider {
+    width: 100%;
+    height: clamp(200px, 50vw, 360px);
+  }
+  .filmstrip { display: none; }
+
+  /* Section headings */
+  h2 { font-size: clamp(2.2rem, 6vw, 3rem); margin-bottom: 1.2rem; }
+
+  /* UCAN bars */
+  .bar-row { grid-template-columns: 80px 1fr 58px; gap: .6rem; }
+  .bar-label { font-size: .64rem; }
+
+  /* Cluster grid */
+  .cluster-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* RIS */
+  .ris-wrap { flex-direction: column; gap: 1rem; }
+  .ris-code-box { min-width: 0; padding: 1.2rem; flex-direction: row; justify-content: flex-start; gap: 1.2rem; }
+
+  /* Jobs */
+  .jobs-grid { grid-template-columns: 1fr; }
+
+  /* Bio layout */
+  .bio-layout { grid-template-columns: 1fr; gap: 1.5rem; }
+  .panel-104 { grid-template-columns: 1fr; }
+
+  /* Plans */
+  .plan-row { grid-template-columns: 1fr; }
+
+  /* Why grid */
+  .why-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Contact strip */
+  .c-strip { flex-direction: column; align-items: flex-start; gap: .8rem; }
+
+  /* Timeline — single column */
+  .tl-node {
+    grid-template-columns: 44px 1fr !important;
+    grid-template-rows: auto;
+  }
+  .tl-node:nth-child(odd) .tl-empty,
+  .tl-node:nth-child(even) .tl-empty { display: none; }
+
+  /* Odd nodes: dot | card */
+  .tl-node:nth-child(odd) .tl-dot-wrap { grid-column: 1; grid-row: 1; }
+  .tl-node:nth-child(odd) .tl-card    { grid-column: 2; grid-row: 1; transform: translateX(12px) !important; }
+  .tl-node:nth-child(odd) .tl-card.visible { transform: translateX(0) !important; }
+
+  /* Even nodes: dot | card */
+  .tl-node:nth-child(even) .tl-dot-wrap { grid-column: 1; grid-row: 1; }
+  .tl-node:nth-child(even) .tl-card    { grid-column: 2; grid-row: 1; transform: translateX(12px) !important; }
+  .tl-node:nth-child(even) .tl-card.visible { transform: translateX(0) !important; }
+
+  .tl-dot { width: 36px; height: 36px; font-size: .82rem; }
+  .tl-spine { left: 18px; }
+  .tl-card { padding: 1rem; }
+
+  /* PDF modal */
+  .pdf-modal-box { width: 96vw; height: 92vh; }
+}
+
+/* ════════════════════════════════
+   ≤ 600px  (small phones)
+════════════════════════════════ */
+@media (max-width: 600px) {
+  /* Topbar — icon-only nav feel */
+  #topbar { height: 56px; padding: 0 .5rem; }
+  .bar-logo { font-size: .95rem; letter-spacing: .06em; }
+  #nav button { padding: .42rem .35rem; font-size: .5rem; letter-spacing: .02em; }
+
+  /* Slides top padding */
+  .slide { padding: 64px .75rem 5rem; }
+
+  /* Hero */
+  .hero-content { padding: 70px .9rem 2.5rem; gap: 1.5rem; min-height: 100vh; }
+  h1 { font-size: clamp(3rem, 14vw, 4rem); }
+  .h-eye { font-size: .62rem; letter-spacing: .14em; }
+  .cta-btn { font-size: .74rem; padding: .6rem 1.4rem; }
+
+  /* Hero slider */
+  .hero-slider {
+    height: clamp(180px, 52vw, 260px);
+  }
+  .hero-slider-wrap { max-width: 100%; }
+  .hsdot { width: 16px; }
+  .hsdot.active { width: 26px; }
+
+  /* S1 tabs */
+  .sub-tabs { flex-wrap: wrap; width: 100%; }
+  .sub-tab { flex: 1 1 auto; text-align: center; font-size: .58rem; padding: .55rem .4rem; }
+
+  /* UCAN bars */
+  .bar-row { grid-template-columns: 70px 1fr 52px; gap: .4rem; }
+  .bar-label { font-size: .58rem; }
+  .bar-meta { font-size: .6rem; }
+
+  /* Cluster grid */
+  .cluster-grid { grid-template-columns: 1fr 1fr; }
+  .cc-score { font-size: 1.5rem; }
+
+  /* Job cards */
+  .job-card { padding: 1.2rem; }
+  .j-num { font-size: 1.8rem; }
+  .j-title { font-size: 1.4rem; }
+  .jlist li { font-size: .84rem; }
+
+  /* Bio */
+  .info-grid { grid-template-columns: 1fr; }
+  .resume-block-header { font-size: .6rem; padding: .6rem 1rem; }
+  .info-item { padding: .6rem 1rem; }
+
+  /* Certs */
+  .cert-badge { width: 34px; height: 34px; font-size: .85rem; }
+  .cert-name { font-size: .82rem; }
+  .cert-view-hint { display: none; }
+
+  /* Projects */
+  .proj-tags { gap: .25rem; }
+  .proj-tag { font-size: .48rem; }
+
+  /* Autobiography */
+  .auto-t { font-size: .9rem; line-height: 1.95; }
+  .auto-t p:first-of-type::first-letter { font-size: 2.2rem; }
+
+  /* Soul / Holland */
+  .soul-name { font-size: 2.2rem; }
+  .hc-code { font-size: 3rem; }
+  .panel-104 { gap: 1rem; }
+
+  /* Why grid */
+  .why-grid { grid-template-columns: 1fr; }
+
+  /* Timeline */
+  .tl-spine { left: 14px; }
+  .tl-dot { width: 30px; height: 30px; font-size: .72rem; }
+  .tl-node { grid-template-columns: 32px 1fr !important; gap: .8rem; margin-bottom: 2rem; }
+  .goal-list li { font-size: .84rem; }
+
+  /* Arrows */
+  .arrow { width: 26px; height: 42px; font-size: .8rem; }
+  #arrowL { left: .2rem; }
+  #arrowR { right: .2rem; }
+
+  /* Dots */
+  #dots { bottom: .7rem; gap: .35rem; }
+  .dot { width: 5px; height: 5px; }
+
+  /* Future header */
+  .future-header p { font-size: .82rem; }
+  .tl-phase { font-size: .6rem; }
+  .tl-card-title { font-size: 1.2rem; }
+}
+
+/* ════════════════════════════════
+   ≤ 380px  (very small phones)
+════════════════════════════════ */
+@media (max-width: 380px) {
+  #nav button { font-size: .44rem; padding: .38rem .25rem; letter-spacing: 0; }
+  h1 { font-size: 2.8rem; }
+  .bar-row { grid-template-columns: 58px 1fr 48px; }
+  .sub-tab { font-size: .5rem; padding: .48rem .25rem; }
+}
+
   </style>
 </head>
 <body>
 
 <!-- ── Video Background ── -->
-<video id="bg-video" autoplay loop muted playsinline>
+<video id="bg-video" autoplay loop muted playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5" preload="auto">
   <source src="back.mp4" type="video/mp4">
 </video>
 
@@ -907,7 +1125,6 @@
           </div>
         </div>
 
-        <!-- 證照 — 可點擊查看 -->
         <div class="resume-block">
           <div class="resume-block-header">證照經歷 <span style="font-size:.55rem;color:var(--muted);letter-spacing:.06em;font-weight:400;">（點擊查看證照）</span></div>
           <div class="cert-list">
@@ -941,11 +1158,9 @@
           </div>
         </div>
 
-        <!-- 作品集 -->
         <div class="resume-block">
           <div class="resume-block-header">作品集</div>
           <div class="proj-list">
-            <!-- 樂之聲 — 可點擊看報告 PDF -->
             <div class="proj-item has-pdf" onclick="openPdf('樂之聲APP報告.pdf','樂之聲 App 專案報告')">
               <div class="proj-top">
                 <span class="proj-name">🎵 樂之聲 App<span class="proj-pdf-hint">查看報告</span></span>
@@ -978,11 +1193,8 @@
         <div class="sec-sub">個人自傳</div>
         <div class="auto-t">
           <p>我是黃義祥，目前就讀於靜宜大學資訊管理學系。我具備「外在活潑、內在沉穩」的性格特質，擅長在腦中建構出完整方案後，再以高效率的行動力付諸實踐。我對職涯發展具備高度的企圖心，並深信<span class="hl">卓越的收入必須建立在深厚的技術實力之上</span>。</p>
-  
           <p>根據 UCAN 職業興趣探索，我的性格代碼為 <span class="hl">RIS（實用 · 研究 · 社會）</span>，其中「實用型」獲得 12 分滿分（PR99）。這項結果充分體現了我對「動手解決真實問題」的熱忱，與我設定的 AIoT 研發工程師及 AI 應用工程師目標精準契合。此外，測驗也印證了我具備將「藝術創意」與「實作技術」互補的能力，這正是我能獨立完成「超級導演分鏡系統」的核心優勢。</p>
-  
           <p>我偏好透過「解決問題」來驅動學習。大二下學期，我參與了 NPO Channel 的「挺好競賽」，在執行 AI 短影音行銷專案時，為突破製作瓶頸，我主動開發了「超級導演分鏡系統」，這讓我深刻體悟到<span class="hl">技術的價值在於精準解決實際的使用需求</span>。目前我正持續投入該系統的迭代與 Local GPU 影片生成技術研究，並同時主導「SoundJoy」音樂互動 App 從企劃到測試的完整生命週期。</p>
-  
           <p>我為自己設定了具備清晰挑戰性的目標：在十年內，成為一名能為上市公司創造實質價值的 <span class="hl">AI 應用與 AIoT 相關工程師</span>。我將持續精進 LLM API 串接、Edge AI 邊緣運算及 RTOS 嵌入式系統開發等關鍵技術，將對家人的承諾轉化為持續研發的動力，以卓越穩定的專業表現，在科技領域實踐個人價值。</p>
         </div>
         <div class="c-strip">
@@ -1072,8 +1284,8 @@
     </div>
   </div>
 
- </div><!-- /track -->
-</div><!-- /stage -->
+ </div>
+</div>
 
 <div id="dots">
   <div class="dot active" onclick="goTo(0)"></div>
@@ -1083,8 +1295,20 @@
   <div class="dot" onclick="goTo(4)"></div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-/* ── PDF Modal ── */
+<script>
+/* ── iOS video force autoplay ── */
+(function(){
+  var v = document.getElementById('bg-video');
+  if(!v) return;
+  v.muted = true;
+  v.play().catch(function(){
+    // If autoplay blocked, try on first touch
+    document.addEventListener('touchstart', function tryPlay(){
+      v.play();
+      document.removeEventListener('touchstart', tryPlay);
+    }, {once:true, passive:true});
+  });
+})();
 function openPdf(filename, title) {
   document.getElementById('pdfModalTitle').textContent = title || '文件檢視';
   document.getElementById('pdfIframe').src = filename;
@@ -1190,11 +1414,16 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight') goTo(cur+1);
   if(e.key==='ArrowLeft') goTo(cur-1);
 });
-let tx=0;
-document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+let tx=0, ty=0;
+document.addEventListener('touchstart',e=>{
+  tx=e.touches[0].clientX;
+  ty=e.touches[0].clientY;
+},{passive:true});
 document.addEventListener('touchend',e=>{
   const dx=e.changedTouches[0].clientX-tx;
-  if(Math.abs(dx)>50) goTo(dx<0?cur+1:cur-1);
+  const dy=e.changedTouches[0].clientY-ty;
+  // 只有水平滑動幅度 > 垂直滑動才切頁（避免干擾上下滾動）
+  if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)*1.5) goTo(dx<0?cur+1:cur-1);
 },{passive:true});
 
 /* ── Hero card slider ── */
@@ -1204,9 +1433,8 @@ document.addEventListener('touchend',e=>{
   var wrap    = document.querySelector('.hero-slider');
   var cur     = 0;
   var total   = slides.length;
-  var ratios  = new Array(total).fill(null); // store w/h ratio per slide
+  var ratios  = new Array(total).fill(null);
 
-  // Pre-load all images and record their natural aspect ratios
   slides.forEach(function(s, i){
     var img = s.querySelector('img');
     function onLoad(){
@@ -1219,17 +1447,22 @@ document.addEventListener('touchend',e=>{
     else { img.addEventListener('load', onLoad); }
   });
 
-  // Resize the slider container to match the active photo's ratio
   function applyRatio(i){
+    // On mobile (≤900px), let CSS control the dimensions — don't set inline styles
+    if (window.innerWidth <= 900) {
+      wrap.style.width  = '';
+      wrap.style.height = '';
+      return;
+    }
     var r = ratios[i];
     if(!r) return;
     var maxH = Math.min(window.innerHeight * 0.68, 580);
     var maxW = wrap.parentElement.offsetWidth * 0.96;
     var w, h;
-    if(r >= 1){           // landscape
+    if(r >= 1){
       w = Math.min(maxW, maxH * r);
       h = w / r;
-    } else {              // portrait
+    } else {
       h = Math.min(maxH, maxW / r);
       w = h * r;
     }
@@ -1285,11 +1518,19 @@ document.addEventListener('touchend',e=>{
     timer=setInterval(function(){ cur=(cur+1)%total; setSlide(cur); }, 2800);
   });
 
-  window.addEventListener('resize', function(){ applyRatio(cur); });
+  window.addEventListener('resize', function(){
+    if (window.innerWidth <= 900) {
+      wrap.style.width  = '';
+      wrap.style.height = '';
+    } else {
+      applyRatio(cur);
+    }
+  });
 })();
 
-/* ── Custom cursor ── */
+/* ── Custom cursor (desktop only) ── */
 (function(){
+  if (!window.matchMedia('(hover: hover)').matches) return;
   var ring=document.createElement('div'); ring.id='cur-ring';
   var dot=document.createElement('div');  dot.id='cur-dot';
   document.body.appendChild(ring);
